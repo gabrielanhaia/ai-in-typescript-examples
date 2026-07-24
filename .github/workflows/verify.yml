@@ -1,0 +1,98 @@
+name: verify
+
+# Runs every published example twice: against the pinned versions (must pass) and
+# against latest (allowed to fail — a failure is the early warning that a framework
+# moved under the books). See docs/versions.md.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  schedule:
+    # Mondays, 06:00 UTC
+    - cron: '0 6 * * 1'
+  workflow_dispatch:
+
+jobs:
+  discover:
+    runs-on: ubuntu-latest
+    outputs:
+      books: ${{ steps.find.outputs.books }}
+      count: ${{ steps.find.outputs.count }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: find
+        name: Find book directories that have published code
+        run: |
+          books=$(find . -maxdepth 2 -name package.json -not -path './node_modules/*' \
+            | xargs -r -n1 dirname | sed 's|^\./||' | sort -u | jq -R -s -c 'split("\n") | map(select(length > 0))')
+          echo "books=$books" >> "$GITHUB_OUTPUT"
+          echo "count=$(echo "$books" | jq 'length')" >> "$GITHUB_OUTPUT"
+          echo "Found: $books"
+
+  pinned:
+    needs: discover
+    if: needs.discover.outputs.count != '0'
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        book: ${{ fromJSON(needs.discover.outputs.books) }}
+    name: pinned (${{ matrix.book }})
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          # becomes `node-version-file: .nvmrc` once the runtime is pinned in docs/versions.md
+          node-version: 'lts/*'
+          cache: npm
+          cache-dependency-path: ${{ matrix.book }}/package-lock.json
+      - name: Install exactly what is pinned
+        working-directory: ${{ matrix.book }}
+        run: npm ci
+      - name: Typecheck
+        working-directory: ${{ matrix.book }}
+        run: npm run typecheck --if-present
+      - name: Verify
+        working-directory: ${{ matrix.book }}
+        run: npm run verify --if-present
+
+  latest:
+    needs: discover
+    if: needs.discover.outputs.count != '0'
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    strategy:
+      fail-fast: false
+      matrix:
+        book: ${{ fromJSON(needs.discover.outputs.books) }}
+    name: latest (${{ matrix.book }})
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 'lts/*'
+      - name: Install latest of every dependency
+        working-directory: ${{ matrix.book }}
+        run: npm install --no-package-lock
+      - name: Typecheck
+        working-directory: ${{ matrix.book }}
+        run: npm run typecheck --if-present
+      - name: Verify
+        working-directory: ${{ matrix.book }}
+        run: npm run verify --if-present
+
+  no-secrets:
+    runs-on: ubuntu-latest
+    name: no committed secrets
+    steps:
+      - uses: actions/checkout@v4
+      - name: Fail if a .env file or an API key was committed
+        run: |
+          if git ls-files | grep -E '(^|/)\.env$|(^|/)\.env\.' | grep -v '\.env\.example$'; then
+            echo "::error::A .env file is tracked. Remove it and rotate the key."; exit 1
+          fi
+          if git grep -nE 'sk-ant-[A-Za-z0-9_-]{8,}' -- . ':!docs/troubleshooting.md' ':!.github/workflows/verify.yml'; then
+            echo "::error::What looks like a real API key is committed. Remove it and rotate the key."; exit 1
+          fi
+          echo "clean"

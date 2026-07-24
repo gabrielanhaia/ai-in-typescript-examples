@@ -1,0 +1,25 @@
+# secrets — never commit
+.env
+.env.*
+!.env.example
+
+# node
+node_modules/
+dist/
+build/
+*.tsbuildinfo
+npm-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# local data (vector stores, checkpoints, scratch output)
+data/
+*.sqlite
+*.sqlite3
+*.db
+
+# os / editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
