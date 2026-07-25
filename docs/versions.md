@@ -40,7 +40,7 @@ This file is the record of what is pinned, why it is pinned there, and when it w
 | | Pinned | Why | Last verified |
 |---|---|---|---|
 | Example model | `claude-haiku-4-5` | Book 1's subject *is* cost and a beginner runs a script dozens of times, so the cheapest tier is the honest default. It is also the only tier that accepts `temperature`/`top_p`/`top_k`, which is what makes chapter 5 teachable at all. From Book 2 the running app moves to `claude-sonnet-5`. | 2026-07-25 |
-| Rates used in the code | `ch11-cost-you-can-compute/rates.ts` | The rate table carries its own `VERIFIED_ON` constant, so a cost printed by this repo always names the date its constants were checked. Chapter 14's log line prints that date beside every figure. | 2026-07-25 |
+| Rates used in the code | `ch11/rates.ts` | The rate table carries its own `VERIFIED_ON` constant, so a cost printed by this repo always names the date its constants were checked. Chapter 14's log line prints that date beside every figure. | 2026-07-25 |
 
 ## Scheduled verification
 

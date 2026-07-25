@@ -52,7 +52,7 @@ enforced twice, once by the provider and once by Zod on the way back.
 `schema.test.ts` runs inside `npm test`:
 
 ```
- ✓ ch09-structured-output-with-zod/schema.test.ts (2 tests)
+ ✓ ch09/schema.test.ts (2 tests)
 ```
 
 The second of those is the one worth understanding: a missing `productArea`

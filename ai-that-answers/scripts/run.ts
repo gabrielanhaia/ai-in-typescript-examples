@@ -23,72 +23,72 @@ const ROOT = new URL("..", import.meta.url);
 
 const CHAPTERS: Record<string, Entry> = {
   ch01: {
-    dir: "ch01-what-an-llm-call-actually-is",
+    dir: "ch01",
     main: "framework-call",
     needsKey: true,
   },
   ch02: {
-    dir: "ch02-your-first-call-in-one-file",
+    dir: "ch02",
     main: "ask",
     needsKey: true,
   },
   ch03: {
-    dir: "ch03-messages-roles-and-history",
+    dir: "ch03",
     main: "chat",
     needsKey: true,
   },
   ch04: {
-    dir: "ch04-the-system-prompt",
+    dir: "ch04",
     main: "ask",
     needsKey: true,
   },
   ch05: {
-    dir: "ch05-sampling",
+    dir: "ch05",
     main: "repeatability",
     needsKey: true,
   },
   ch06: {
-    dir: "ch06-prompt-technique",
+    dir: "ch06",
     main: "compare",
     needsKey: true,
   },
   ch07: {
-    dir: "ch07-streaming-to-a-terminal",
+    dir: "ch07",
     main: "stream-basic",
     needsKey: true,
   },
   ch08: {
-    dir: "ch08-streaming-to-a-web-ui",
+    dir: "ch08",
     main: "server",
     needsKey: true,
   },
   ch09: {
-    dir: "ch09-structured-output-with-zod",
+    dir: "ch09",
     main: "triage",
     needsKey: true,
   },
   ch10: {
-    dir: "ch10-tokens-and-the-context-window",
+    dir: "ch10",
     main: "three-ways",
     needsKey: true,
   },
   ch11: {
-    dir: "ch11-cost-you-can-compute",
+    dir: "ch11",
     main: "run-examples",
     needsKey: false,
   },
   ch12: {
-    dir: "ch12-errors-retries-timeouts",
+    dir: "ch12",
     main: "measure-retries",
     needsKey: true,
   },
   ch13: {
-    dir: "ch13-when-not-to-use-an-llm",
+    dir: "ch13",
     main: "run-examples",
     needsKey: false,
   },
   ch14: {
-    dir: "ch14-the-finished-chatbot",
+    dir: "ch14",
     main: "src/cli",
     needsKey: true,
   },

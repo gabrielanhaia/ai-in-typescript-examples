@@ -6,7 +6,7 @@
 // expect zeros. That is the failure mode this script exists to make visible.
 import { ChatAnthropic } from "@langchain/anthropic";
 import { HumanMessage, SystemMessage } from "langchain";
-import { SYSTEM_PROMPT } from "../ch04-the-system-prompt/prompt/system.js";
+import { SYSTEM_PROMPT } from "../ch04/prompt/system.js";
 import { spendOf } from "./usage.js";
 import { costOf } from "./cost.js";
 

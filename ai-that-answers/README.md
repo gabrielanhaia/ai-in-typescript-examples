@@ -45,20 +45,20 @@ the book.
 
 | | Directory | What it covers |
 |---|---|---|
-| 1 | [`ch01-what-an-llm-call-actually-is`](ch01-what-an-llm-call-actually-is) | The same call through the SDK and through the framework |
-| 2 | [`ch02-your-first-call-in-one-file`](ch02-your-first-call-in-one-file) | The smallest project that makes a real call |
-| 3 | [`ch03-messages-roles-and-history`](ch03-messages-roles-and-history) | The chat loop, and what it resends every turn |
-| 4 | [`ch04-the-system-prompt`](ch04-the-system-prompt) | Whole prompts, kept byte-stable, in their own module |
-| 5 | [`ch05-sampling`](ch05-sampling) | `temperature` — what it buys, and where it went |
-| 6 | [`ch06-prompt-technique`](ch06-prompt-technique) | A tally sheet instead of an opinion |
-| 7 | [`ch07-streaming-to-a-terminal`](ch07-streaming-to-a-terminal) | `.stream()`, chunk assembly, cancellation |
-| 8 | [`ch08-streaming-to-a-web-ui`](ch08-streaming-to-a-web-ui) | Hono, SSE, and a browser that renders as it lands |
-| 9 | [`ch09-structured-output-with-zod`](ch09-structured-output-with-zod) | One schema, a validator and a type |
-| 10 | [`ch10-tokens-and-the-context-window`](ch10-tokens-and-the-context-window) | Counting properly, and the two ceilings |
-| 11 | [`ch11-cost-you-can-compute`](ch11-cost-you-can-compute) | Rates, arithmetic, caching, and five levers |
-| 12 | [`ch12-errors-retries-timeouts`](ch12-errors-retries-timeouts) | Classify before you retry; choose your own policy |
-| 13 | [`ch13-when-not-to-use-an-llm`](ch13-when-not-to-use-an-llm) | Six functions that should never be a model call |
-| 14 | [`ch14-the-finished-chatbot`](ch14-the-finished-chatbot) | All of it, assembled, with the seam in one file |
+| 1 | [`ch01`](ch01) | The same call through the SDK and through the framework |
+| 2 | [`ch02`](ch02) | The smallest project that makes a real call |
+| 3 | [`ch03`](ch03) | The chat loop, and what it resends every turn |
+| 4 | [`ch04`](ch04) | Whole prompts, kept byte-stable, in their own module |
+| 5 | [`ch05`](ch05) | `temperature` — what it buys, and where it went |
+| 6 | [`ch06`](ch06) | A tally sheet instead of an opinion |
+| 7 | [`ch07`](ch07) | `.stream()`, chunk assembly, cancellation |
+| 8 | [`ch08`](ch08) | Hono, SSE, and a browser that renders as it lands |
+| 9 | [`ch09`](ch09) | One schema, a validator and a type |
+| 10 | [`ch10`](ch10) | Counting properly, and the two ceilings |
+| 11 | [`ch11`](ch11) | Rates, arithmetic, caching, and five levers |
+| 12 | [`ch12`](ch12) | Classify before you retry; choose your own policy |
+| 13 | [`ch13`](ch13) | Six functions that should never be a model call |
+| 14 | [`ch14`](ch14) | All of it, assembled, with the seam in one file |
 
 Chapters **11** and **13** run with no API key at all, and their output is
 identical on every machine. They are the two to try first.
@@ -78,7 +78,7 @@ most of chapter 10 is free.
 **No dollar total is printed here**, because it would be a figure nobody measured
 on your account, and this repo does not print numbers it did not measure. What it
 gives you instead is the arithmetic: the rate table lives in
-[`ch11-cost-you-can-compute/rates.ts`](ch11-cost-you-can-compute/rates.ts) with
+[`ch11/rates.ts`](ch11/rates.ts) with
 the date it was verified beside it, and `docker compose run ai-that-answers ch11`
 prints the cost of a call and of a whole conversation. That is chapter 11's whole
 point, and it is worth running before you run anything that loops.
@@ -128,7 +128,7 @@ Small, deliberate, and listed here so nothing is a surprise.
   with the same exact pins. Where the book says `npm run ask -- "…"`, this repo
   says `npm run run-example -- ch02 "…"`.
 - **Directories are named after the chapter**, so `ch02` in the book is
-  `ch02-your-first-call-in-one-file` here. The runner accepts the short form:
+  `ch02` here. The runner accepts the short form:
   `docker compose run ai-that-answers ch02`.
 - **File paths resolve against the module, not the working directory.** Where a
   listing prints `readFile("ch08/index.html")`, this repo uses
@@ -138,8 +138,8 @@ Small, deliberate, and listed here so nothing is a surprise.
   reuses it on a buffered response and tells you to widen the parameter first;
   the shipped file is already widened, because there is only one of it.
 - **Two files are not listings from the book.**
-  `ch11-cost-you-can-compute/run-examples.ts` and
-  `ch13-when-not-to-use-an-llm/run-examples.ts` are drivers, so that chapters
+  `ch11/run-examples.ts` and
+  `ch13/run-examples.ts` are drivers, so that chapters
   made entirely of pure functions have something to run and an output to show.
   Both say so at the top.
 - **Chapter 6's input set is larger than the twelve printed**, which is what the

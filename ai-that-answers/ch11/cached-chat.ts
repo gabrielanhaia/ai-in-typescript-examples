@@ -3,7 +3,7 @@
 // where the cache marker goes.
 import { ChatAnthropic } from "@langchain/anthropic";
 import { HumanMessage, SystemMessage, type BaseMessage } from "langchain";
-import { SYSTEM_PROMPT } from "../ch04-the-system-prompt/prompt/system.js";
+import { SYSTEM_PROMPT } from "../ch04/prompt/system.js";
 import { spendOf } from "./usage.js";
 
 const model = new ChatAnthropic({

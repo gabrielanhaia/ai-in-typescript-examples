@@ -62,7 +62,7 @@ point of it.
 `classify.test.ts` runs inside `npm test`:
 
 ```
- ✓ ch12-errors-retries-timeouts/classify.test.ts (3 tests)
+ ✓ ch12/classify.test.ts (3 tests)
 ```
 
 The third test is the interesting one: an `APIError` with **no status** is what a

@@ -4,7 +4,7 @@ import { defineConfig } from "vitest/config";
 // ANTHROPIC_API_KEY. Never wired into `npm run verify`.
 export default defineConfig({
   test: {
-    include: ["ch05-*/**/*.test.ts"],
+    include: ["ch05/**/*.test.ts"],
     testTimeout: 60_000,
   },
 });

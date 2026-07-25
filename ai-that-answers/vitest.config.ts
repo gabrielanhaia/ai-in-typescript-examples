@@ -6,6 +6,6 @@ import { defineConfig } from "vitest/config";
 export default defineConfig({
   test: {
     include: ["ch*/**/*.test.ts"],
-    exclude: ["**/node_modules/**", "ch05-*/**"],
+    exclude: ["**/node_modules/**", "ch05/**"],
   },
 });

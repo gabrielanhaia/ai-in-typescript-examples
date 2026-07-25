@@ -2,8 +2,8 @@
 // input set, record output_tokens per answer, sort, and look at the high end.
 import { ChatAnthropic } from "@langchain/anthropic";
 import { HumanMessage, SystemMessage } from "langchain";
-import { inputs } from "../ch06-prompt-technique/inputs.js";
-import { BASELINE } from "../ch06-prompt-technique/variants.js";
+import { inputs } from "../ch06/inputs.js";
+import { BASELINE } from "../ch06/variants.js";
 
 const SYSTEM_PROMPT = BASELINE.system;
 

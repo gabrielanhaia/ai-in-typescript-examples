@@ -1,5 +1,5 @@
 import type { AIMessage, AIMessageChunk } from "@langchain/core/messages";
-import { stopReason } from "../ch07-streaming-to-a-terminal/stop-reason.js";
+import { stopReason } from "../ch07/stop-reason.js";
 
 export type Finish =
   | { kind: "complete"; text: string }

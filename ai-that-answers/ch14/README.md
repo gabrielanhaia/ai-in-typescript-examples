@@ -23,7 +23,7 @@ npm test                            # config.test.ts, no network
 ## The shape
 
 ```
-ch14-the-finished-chatbot/
+ch14/
 ├─ public/
 │  └─ index.html            the browser page from chapter 8
 └─ src/
@@ -76,7 +76,7 @@ survives across questions in one process.
 `npm test` runs the five unit tests:
 
 ```
- ✓ ch14-the-finished-chatbot/src/config.test.ts (5 tests)
+ ✓ ch14/src/config.test.ts (5 tests)
 ```
 
 **The third is the one worth understanding.** Change `MODEL.model` to
