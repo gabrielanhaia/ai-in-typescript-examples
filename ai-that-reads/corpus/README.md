@@ -1,5 +1,10 @@
 # The Braxby Cycles corpus
 
+> **Everything here is invented.** Braxby Cycles does not exist, and neither does any
+> person, address, part number, price or policy in these files. The domain uses the
+> reserved `.example` TLD, which cannot resolve. Checked 2026-07-25: no real business
+> of this name, and no trading estate of the name used in these documents.
+
 The sample document set for **Book 2, *AI That Reads***. Every retrieval
 measurement printed in that book is taken over the files in this directory, so
 the corpus is committed, versioned and stable rather than downloaded at run
