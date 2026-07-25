@@ -1,0 +1,51 @@
+# The two stores AI That Reads uses, from chapter 7 onward.
+#
+#   docker compose up -d
+#
+# Neither needs an account, a licence key, or a signup. That is deliberate:
+# every listing this book prints has to run for a reader who has just cloned
+# the repository, and a cloud-only store would put a registration form between
+# the reader and chapter 7.
+#
+# Both bind to localhost only.
+
+services:
+  # PostgreSQL with the pgvector extension. The book's PRIMARY store: the
+  # database most readers already run, doing vector search without becoming a
+  # second system to operate. Chapter 8's keyword search is this same server's
+  # built-in full-text search, which is why hybrid retrieval here costs no
+  # extra dependency and no second index to keep in sync.
+  postgres:
+    image: pgvector/pgvector:0.8.5-pg18
+    container_name: air-postgres
+    environment:
+      POSTGRES_USER: braxby
+      POSTGRES_PASSWORD: braxby
+      POSTGRES_DB: braxby
+    ports:
+      - "127.0.0.1:5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U braxby -d braxby"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  # Qdrant — the dedicated vector database, shown in chapter 7 as the
+  # alternative to pgvector. Apache-2.0 and runs with no configuration at all.
+  #
+  # NOTE: started with no authentication, which is fine bound to localhost for
+  # learning and is NOT how you would expose it anywhere else.
+  qdrant:
+    image: qdrant/qdrant:v1.18.3
+    container_name: air-qdrant
+    ports:
+      - "127.0.0.1:6333:6333"   # REST
+      - "127.0.0.1:6334:6334"   # gRPC
+    volumes:
+      - qdrantdata:/qdrant/storage
+
+volumes:
+  pgdata:
+  qdrantdata:
