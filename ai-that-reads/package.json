@@ -13,6 +13,7 @@
     "verify": "npm run typecheck && npm run test"
   },
   "dependencies": {
+    "@langchain/anthropic": "1.5.2",
     "@langchain/classic": "1.0.40",
     "@langchain/cohere": "1.1.0",
     "@langchain/core": "1.2.3",
