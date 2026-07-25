@@ -5,14 +5,19 @@
   "type": "module",
   "description": "Runnable examples for AI That Reads (Book 2 of AI in TypeScript)",
   "license": "MIT",
+  "engines": {
+    "node": ">=24.18.0"
+  },
   "scripts": {
     "run-example": "node --env-file-if-exists=../.env --env-file-if-exists=.env --import tsx scripts/run.ts",
+    "db:setup": "node --env-file-if-exists=../.env --env-file-if-exists=.env --import tsx scripts/db-setup.ts",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:live": "vitest run --config vitest.live.config.ts",
     "verify": "npm run typecheck && npm run test"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "0.115.0",
     "@langchain/anthropic": "1.5.2",
     "@langchain/classic": "1.0.40",
     "@langchain/cohere": "1.1.0",

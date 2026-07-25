@@ -11,7 +11,9 @@ This file is the record of what is pinned, why it is pinned there, and when it w
 3. **Verified twice per book** — once while the book is drafted, once at its fact-check pass — and re-verified whenever CI reports a break.
 4. **A pin is only changed deliberately**, with the change noted in the changelog below. Silent bumps are how a repo stops matching the printed book.
 
-## Pinned versions
+## Pinned versions — shared
+
+Both book directories pin these, at the same versions.
 
 | Package | Pinned | Why | Last verified | Used by |
 |---|---|---|---|---|
@@ -25,17 +27,90 @@ This file is the record of what is pinned, why it is pinned there, and when it w
 | `typescript` | `7.0.2` | Current stable (released 2026-07-08). Documented fallback **5.9.3**, with **6.0.3** as the intermediate option — 6.0 carries its own breaking changes (import assertions deprecated, generic JSX inference), so falling back into 6.x trades one migration for another. | 2026-07-25 | `ai-that-answers` |
 | `@types/node` | `24.13.3` | **Never `latest`.** `latest` is `26.x` — Node 26 typings — which contradicts the Node 24 LTS runtime pin below and produces type errors that look like code bugs. | 2026-07-25 | `ai-that-answers` |
 | `tsx` | `4.23.1` | Runs the `.ts` listings directly, so no build step stands between a reader and an example. Loaded with `node --import tsx`. | 2026-07-25 | `ai-that-answers` |
-| `vitest` | `4.1.10` | The unit tests. `npm run verify` runs them and they never touch the network; the one test that calls the model is in `npm run test:live`. | 2026-07-25 | `ai-that-answers` |
+| `vitest` | `4.1.10` | The unit tests. `npm run verify` runs them and they never touch the network; the one test that calls the model is in `npm run test:live`. | 2026-07-25 | `ai-that-answers`, `ai-that-reads` |
+
+Where the "Used by" column above says only `ai-that-answers`, Book 2 either does not use the package (`hono`, `@hono/node-server`) or pins the identical version for the same reason (`langchain`, `@langchain/anthropic`, `@langchain/core`, `@anthropic-ai/sdk`, `zod`, `typescript`, `@types/node`, `tsx`).
+
+`@anthropic-ai/sdk` is worth one extra sentence in Book 2: **no chapter names it in an install line**, because it arrives from Book 1 — but chapter 10's `budget.ts` imports it directly for `messages.countTokens`, so it has to be a top-level dependency here too, at the same `0.115.0` that `@langchain/anthropic@1.5.2` resolves to. `npm ls @anthropic-ai/sdk` shows one copy, deduped.
+
+## Pinned versions — Book 2, *AI That Reads*
+
+Retrieval adds a second provider, a third for reranking, two containers, and the parsers. Everything below was installed and run on 2026-07-25.
+
+| Package | Pinned | Why | Last verified | Chapter |
+|---|---|---|---|---|
+| `@langchain/openai` | `1.5.5` | The embedding binding. **A second vendor is unavoidable**: Anthropic sells no embeddings endpoint and points at Voyage AI instead, so there is no version of this app that runs on one key. `batchSize` defaults to 512 and `maxConcurrency` to 2 — both read out of the shipped source, neither documented. | 2026-07-25 | 2, 6 |
+| `openai` | `6.49.0` | The provider's own client, used **only for measurement**. `embedDocuments` returns vectors and nothing else, so `response.usage.total_tokens` is unreachable through the binding. Same move Book 1 made for token counting. | 2026-07-25 | 6 |
+| `pdf-parse` | `2.4.5` | PDF text extraction, called directly rather than through a loader wrapper. **2.x is a class, where older tutorials show a function**: construct with the bytes, `getText()`, `destroy()` in a `finally`. `pageJoiner` defaults to `-- n of m --`, which lands inside the string you are about to embed. | 2026-07-25 | 3 |
+| `cheerio` | `1.2.0` | HTML parsing. `.text()` concatenates descendants with no separator, so a table becomes word salad — the loader inserts the separators back before asking for the text. Latest at pin time; see the deprecation note below. | 2026-07-25 | 3 |
+| `@langchain/textsplitters` | `1.0.1` | The recursive and Markdown splitters. Default separator list is `["\n\n", "\n", " ", ""]` — no sentence boundary, and the Markdown list has **no `"\n# "`** in it, so top-level headings are not split points. | 2026-07-25 | 4 |
+| `pg` | `8.22.0` | The PostgreSQL driver. Has an **`onConnect` option that is awaited**, unlike the `connect` event every example on the internet shows; the event version races the caller's first query and prints a deprecation warning. | 2026-07-25 | 7, 8, 11, 13 |
+| `pgvector` | `0.3.0` | Not the extension — the npm glue that turns a JS array into the text form the extension parses, and back. Use **`registerTypes`**, plural; the singular `registerType` still exists and is deprecated, which you find by reading the source and not from a type error. | 2026-07-25 | 7, 8, 13 |
+| `@types/pg` | `8.20.0` | `pg` ships no type declarations, so without this every return value from the driver is `any`. | 2026-07-25 | 7 |
+| `@langchain/pgvector` | `0.1.0` | The first-party store binding. **Pre-1.0**: first-party and current and not deprecated, and also a `0.x`, so pin it exactly and read the changelog before bumping. Its `initialize` creates a table with **no vector index at all**, and its `similaritySearchWithScore` returns a *distance*. | 2026-07-25 | 7 |
+| `@langchain/qdrant` | `1.0.3` | The second store path. `QdrantVectorStore` is exported from the package root. Returns a *similarity* where pgvector returns a *distance*, with identical type signatures. | 2026-07-25 | 7, 14 |
+| `@qdrant/js-client-rest` | `1.18.0` | Peer of the binding above. Matches the `qdrant/qdrant:v1.18.3` image. | 2026-07-25 | 7, 14 |
+| `@langchain/cohere` | `1.1.0` | The reranker. **Do not pin `cohere-ai` alongside it** — the binding brings its own copy and a top-level pin resolves a second one. `CohereRerank`'s doc comment claims a default model; the shipped code has none and throws `Model not specified for CohereRerank instance`. `topN` defaults to 3. | 2026-07-25 | 9 |
+| `@langchain/classic` | `1.0.40` | Holds `EnsembleRetriever` and `ContextualCompressionRetriever`, which **used to arrive as somebody else's transitive dependency** and now have to be asked for by name. `EnsembleRetriever` keys documents on `pageContent` and its `c: 0` silently becomes 60. | 2026-07-25 | 8, 9 |
+
+### Containers
+
+| Image | Pinned | Why | Last verified |
+|---|---|---|---|
+| `pgvector/pgvector` | `0.8.5-pg18` | **One tag names both versions**, so the extension and the database move together or not at all. Resolves to PostgreSQL 18.4 (verified by running it). Mount the volume at `/var/lib/postgresql`, **not** `.../data`: the PG18 images moved the data directory under a versioned subdirectory, and the old path makes `initdb` refuse to start. | 2026-07-25 |
+| `qdrant/qdrant` | `v1.18.3` | Apache-2.0, starts with no account, no key and no licence file, which is why it is the dedicated store this series teaches. Bound to localhost with no authentication — fine for learning, not how you would expose it. | 2026-07-25 |
+
+Runtime settings read from `pg_settings` on that container, 2026-07-25, because chapter 8 depends on all four: `hnsw.ef_search` **40**, `hnsw.iterative_scan` **off**, `hnsw.max_scan_tuples` **20000**, `ivfflat.iterative_scan` **off**.
+
+### Models
+
+| | Pinned | Why | Last verified |
+|---|---|---|---|
+| Answering | `claude-sonnet-5` | Handed over by Book 1's chapter 14. This book puts thousands of tokens of retrieved material into every prompt and asks for careful, faithful reading of it, which is the workload the mid tier exists for. **Rejects a non-default `temperature`, `top_p` or `top_k` with a 400.** Minimum cacheable prefix 1,024 tokens. | 2026-07-25 |
+| Embedding | `text-embedding-3-small` | 1,536 dimensions, reducible via the `dimensions` parameter, 8,192-token input limit. 1,536 sits inside pgvector's 2,000-dimension index ceiling; `text-embedding-3-large` at 3,072 does not. **`model` defaults to `text-embedding-ada-002`**, which does not support `dimensions` at all, so leaving it out gets you something else. | 2026-07-25 |
+| Reranking | `rerank-v4.0-fast` | 32,768-token context. `rerank-v4.0-pro` is the quality ceiling and `rerank-v3.5` is still current with a 4,096-token limit that is the thing to watch. Pass the model explicitly; there is no default. | 2026-07-25 |
+
+### The wrapper package that is gone
+
+**`@langchain/community` was deprecated wholesale on 2026-05-27**, and with it a dozen tutorials' worth of import paths: the PDF and HTML document loaders, the Transformers.js embeddings binding, and a long tail of store and retriever wrappers. It is not coming back and it is not in this repository.
+
+What replaced each thing Book 2 would have used it for:
+
+| Was | Is now | Where |
+|---|---|---|
+| `PDFLoader` | `pdf-parse` **2.4.5**, called directly | `ch03/load-pdf.ts` |
+| `CheerioWebBaseLoader` | `cheerio` **1.2.0**, called directly | `ch03/load-html.ts` |
+| `PGVectorStore` from community | `@langchain/pgvector` **0.1.0** | `ch07/pgvector-store.ts` |
+| A BM25 / in-memory keyword retriever | **PostgreSQL full-text search** — `to_tsvector`, `websearch_to_tsquery`, `ts_rank_cd`, GIN | `ch08/fts.sql`, `ch08/keyword.ts` |
+| `HuggingFaceTransformersEmbeddings` | no first-party binding; the `Embeddings` subclass around Transformers.js | `ch06/custom-embeddings.ts` |
+
+Two of those are upgrades rather than substitutions. Calling the parsers directly is what exposes the parameter that fixes a two-column page and the intermediate value that says a page had no text on it — both of which a wrapper removes. And Postgres full-text search costs **no new dependency, no second index to keep in sync, and no in-memory structure that forgets everything on restart**; one `DELETE` removes a document from both halves of the search, because there is only one row.
+
+There is a lesson in how the deprecation was found, and chapter 3 states it: asking npm for the package's version returned an ordinary version number with no complaint. The deprecation was visible only in the manifest's `deprecated` field and in the warning a real install printed. **A version number is not a verification.**
+
+### Known transitive deprecation
+
+`npm ci` in `ai-that-reads` prints exactly one deprecation warning, and it is not ours to fix:
+
+```text
+npm warn deprecated whatwg-encoding@3.1.1: Use @exodus/bytes instead …
+```
+
+The chain is `cheerio@1.2.0` → `encoding-sniffer@0.2.1` → `whatwg-encoding@3.1.1`. `cheerio@1.2.0` **is** the latest release and it still declares `encoding-sniffer: ^0.2.1`; `encoding-sniffer@1.0.2` is the version that swapped to `@exodus/bytes`, and forcing it through an `overrides` entry would violate cheerio's own declared range on an unverified major bump — in a loader whose failures arrive as text rather than as errors. Left alone, deliberately, and recorded here with a date instead. Re-check when cheerio next moves.
+
+No package pinned in this repository is deprecated, and `npm ls` shows no second copy of anything either directory pins.
 
 ## Runtime
 
 | Component | Pinned | Why | Last verified |
 |---|---|---|---|
 | Node.js | **24.18.0** ("Krypton", Active LTS) | Recorded in [`.nvmrc`](../.nvmrc) at the repo root, which is what CI reads (`node-version-file: .nvmrc`) and what `nvm use` picks up. Matches the `@types/node` pin. | 2026-07-25 |
-| Base image | `node:24-bookworm-slim` | The 24.x line, Debian bookworm, slim. Each book's `Dockerfile` uses it; the exact patch a build resolves to is whatever the tag points at on build day. | 2026-07-25 |
+| Base image | `node:24-bookworm-slim` | The 24.x line, Debian bookworm, slim. Used by every book directory that ships a `Dockerfile`; the exact patch a build resolves to is whatever the tag points at on build day. `ai-that-reads` has none — its containers are the two stores, and its examples run on your own Node. | 2026-07-25 |
 | TypeScript config | `strict`, `module: nodenext`, **`skipLibCheck: true`** | `skipLibCheck` is **required, not a preference**: without it `tsc` fails inside `@langchain/anthropic@1.5.2`'s own `webSearch.d.ts`, which references `BetaWebSearchTool20250305` — a type `@anthropic-ai/sdk@0.115.0` renamed to `BetaWebSearchTool20260209`. Library-internal, reproducible, no runtime effect. | 2026-07-25 |
 
-## Model
+## Model — Book 1
+
+Book 2's three models are in its own table above.
 
 | | Pinned | Why | Last verified |
 |---|---|---|---|
@@ -57,4 +132,5 @@ That second job is the early-warning system for framework churn. When it fires: 
 
 Changes to a pin go here, newest first — date, what moved, from what to what, and why.
 
+- **2026-07-25 — Book 2's set, *AI That Reads*.** Thirteen new packages and two container images, all verified by installing the tree, starting both containers, and running `npm ci && npm run typecheck && npm run verify` plus every chapter that does not need a key. Four of them were arrived at the hard way. `@langchain/community` is **absent, not forgotten** — it was deprecated wholesale on 2026-05-27 and every loader Book 2 would have taken from it is now the underlying library called directly. `cohere-ai` is **deliberately not pinned**, because `@langchain/cohere` brings its own copy and a top-level pin resolves a second one. `@langchain/pgvector` is a `0.1.0` and that is stated rather than glossed. And `@anthropic-ai/sdk` is a top-level dependency here too, at the same `0.115.0`, because chapter 10's `budget.ts` imports it directly even though no chapter names it in an install line. One transitive deprecation warning survives, through `cheerio@1.2.0`, and is recorded above rather than papered over with an `overrides` entry.
 - **2026-07-25 — first published set.** Every pin above landed with *AI That Answers*, verified by installing the tree and running `npm ci && npm run typecheck && npm run verify` on it. Two of them were arrived at the hard way and are worth restating: `@langchain/anthropic` is `1.5.2` rather than `1.5.1` because `1.5.1` produces a duplicated `@anthropic-ai/sdk`, and `@types/node` is `24.13.3` rather than `latest` because `latest` is Node 26 typings against a Node 24 runtime.

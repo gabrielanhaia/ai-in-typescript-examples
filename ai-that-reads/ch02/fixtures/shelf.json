@@ -1,0 +1,30 @@
+{
+  "note": "NOT FROM THE BOOK. Hand-written vectors, eight dimensions instead of 1,536, so that ch02/cosine.ts and ch02/tiny-search.ts can be exercised with no API key and so that every score below is arithmetic you can check on paper. These are not model output and they are not embeddings of the text beside them.",
+  "shelf": [
+    {
+      "name": "warranty.txt",
+      "text": "The warranty covers the original purchaser only and is not transferable.",
+      "vector": [0.90, 0.30, 0.10, 0.05, 0.02, 0.00, 0.00, 0.00]
+    },
+    {
+      "name": "shipping.txt",
+      "text": "Orders over 60 pounds ship free within the United Kingdom.",
+      "vector": [0.05, 0.10, 0.85, 0.40, 0.05, 0.02, 0.00, 0.00]
+    },
+    {
+      "name": "wheelset.txt",
+      "text": "The Emberly XR wheelset uses a 24-spoke front and a 28-spoke rear.",
+      "vector": [0.02, 0.05, 0.10, 0.10, 0.88, 0.35, 0.05, 0.00]
+    }
+  ],
+  "questions": [
+    {
+      "question": "Can I still claim if I bought the bike secondhand?",
+      "vector": [0.86, 0.36, 0.12, 0.06, 0.04, 0.00, 0.00, 0.00]
+    },
+    {
+      "question": "How do I return a wheel?",
+      "vector": [0.10, 0.14, 0.80, 0.44, 0.12, 0.03, 0.00, 0.00]
+    }
+  ]
+}

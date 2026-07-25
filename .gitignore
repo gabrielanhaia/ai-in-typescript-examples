@@ -17,6 +17,9 @@ data/
 *.sqlite
 *.sqlite3
 *.db
+# Book 2's on-disk embedding cache, written by ch06/file-cache.ts. One file per
+# vector key, and the whole point of it is that it is cheap to delete.
+.vectors/
 
 # os / editor
 .DS_Store
