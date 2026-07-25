@@ -46,7 +46,13 @@ async function recallAtK(
   return found / probes.length;
 }
 
-const docs = await loadCorpus("corpus");
+// Named folders, not the corpus root: `corpus/README.md` is a sibling of the
+// corpus and not a member of it. Chapter 13 finds this the expensive way.
+const FOLDERS = ["corpus/markdown", "corpus/html", "corpus/pdf"];
+
+const docs: SourceDocument[] = [];
+for (const folder of FOLDERS) docs.push(...(await loadCorpus(folder)));
+
 console.log("size\toverlap\tchunks\trecall@5");
 
 for (const size of [300, 600, 1200, 2400]) {

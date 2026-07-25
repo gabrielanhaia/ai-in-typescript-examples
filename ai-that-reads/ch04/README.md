@@ -63,5 +63,5 @@ Seventeen characters of pure heading, embedded and indexed and carrying no infor
 
 - The paragraph is joined into one line before splitting, as the chapter instructs. Leave the newlines in and the recursive splitter cuts on them and every number above changes.
 - `chunkOverlap` is a **maximum applied while merging**, not a stride: ask for 40 and this paragraph gives you none, because the pieces happened to fit.
-- `sweep.ts` calls `loadCorpus("corpus")`, which picks up `corpus/README.md` alongside the corpus. It only affects the chunk count, not the recall figure, but it is the same wart chapter 13 fixes with an explicit folder list.
+- `sweep.ts` names the three corpus folders rather than walking `corpus/`, because `corpus/README.md` is a sibling of the corpus and not a member of it — the same mistake chapter 13 describes finding in `scanCorpus`.
 - This repo runs `chunkPages`, the second of the chapter's three PDF strategies, so a citation reads `pp. 2-3` when a chunk straddled a break.

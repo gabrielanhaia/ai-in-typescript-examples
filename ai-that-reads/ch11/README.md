@@ -71,14 +71,14 @@ Best chunk per candidate file, for the answer sentence about the window being co
 
 Both passages holding the detail the question turns on land near the top. The look-alike lands at a third — even though it covers returns, quotes thirty days, and mentions delivery, which is the entire set of signals available to a ranker.
 
-The book prints 1.00 / 0.88 / 0.25 for this table. Coverage is a ratio over the *chunk's* lexemes, so it moves with chunk size; the separation is the finding, not the third decimal place.
+Coverage is a ratio over the *chunk's* lexemes, so it moves with chunk size; the separation is the finding, not the third decimal place.
 
 `supportingSpan` on the returns desk chunk returns the sentence with the matching lexemes bracketed, and returns `null` — not a misleading fragment — when nothing matches. That guard is the `!span.includes("[[")` in the listing: with nothing to match, `ts_headline` returns the *start of the field*, which a caller that renders unconditionally will show a reader as a supporting quote.
 
 ## Notes
 
 - **`chunkId.split("#")[0]` recovers the `sourceId`.** That works because chapter 4 built the ID from the source path plus a position rather than from a UUID or a hash.
-- **In the live pipeline, `metadata.chunkId` carries a `corpus/` prefix that `questions.jsonl` does not**, so `scoreCitations` compares `corpus/markdown/x.md` against `markdown/x.md` and reports `false` for everything. `run-examples.ts` above passes corpus-relative IDs so you can see the function working. See [`../ch12/README.md`](../ch12/README.md) for what causes it and the one-line fix.
+- **`metadata.chunkId` is corpus-relative, and it has to be**, because `questions.jsonl` spells its `file` that way. `ch13/sync.ts` restamps `sourceId` from `scanCorpus` before chunking, which is the single place that identity is decided; without that restamp the loaders' `corpus/markdown/x.md` reaches `chunkId` and `scoreCitations` reports `false` for everything. See [`../ch12/README.md`](../ch12/README.md).
 - **Uncited candidates never reach the footnotes.** List all five passages you retrieved and you have implied that five documents back the answer, when two did and the other three were ranked highly and then not used.
 - `claimCoverage` is a **lint, not a proof**. Lexeme overlap is blind to polarity, so a passage that negates your sentence word for word scores 1.00. Do not take a threshold from this page; run it across your own question set and pick a value that flags the tail.
 - Do not parse markers incrementally while streaming. A partial stream can contain `[1` and nothing else yet. Buffer the answer and run `renderAnswer` once at the end.

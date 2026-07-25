@@ -33,6 +33,9 @@ const store = new QdrantVectorStore(embedder, {
 });
 await store.ensureCollection();
 
+const started = performance.now();
+let moved = 0;
+
 for (let offset = 0; ; offset += 64) {
   const { rows } = await pool.query<StoredChunk>(
     `select content, metadata, embedding from chunks
@@ -49,4 +52,16 @@ for (let offset = 0; ; offset += 64) {
     }),
     { ids: rows.map((row) => pointId(String(row.metadata.chunkId))) },
   );
+  moved += rows.length;
 }
+
+// Print it, or the claim this file exists to test is untested. The embedding
+// count is a constant because nothing here embeds: `addVectors` takes the
+// numbers out of the column, and `addDocuments` is the call that would not.
+const elapsed = (performance.now() - started) / 1000;
+console.log(
+  `${moved} chunks moved in ${elapsed.toFixed(1)}s, 0 embedding calls`,
+);
+
+const { count } = await store.client.count("braxby", { exact: true });
+console.log(`points_count: ${count}`);

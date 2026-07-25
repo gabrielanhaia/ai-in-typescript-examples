@@ -30,7 +30,7 @@ npm run run-example -- ch01/grounded corpus/markdown/warranty-policy.md
 
 ## What you need, and when
 
-**Nothing at all** for chapters 3 and 4, and for the keyless half of 2, 8, 9, 10, 11, 12 and 13. Those are the ones to run first.
+**Nothing at all** for chapter 3, for all of chapter 4 except `sweep.ts`, and for the keyless half of 2, 6, 8, 9, 10, 11, 12, 13 and 14. Those are the ones to run first. `npm run run-example -- --list` prints what each listing needs, by name.
 
 **A container** from chapter 7 onward:
 

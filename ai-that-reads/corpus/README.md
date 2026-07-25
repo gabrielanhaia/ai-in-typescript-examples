@@ -178,6 +178,14 @@ Thirty-five lines: **30 grounded questions with known answers, and 5 whose
 answer is `null`** because the corpus does not contain one. This is the file
 chapter 12 measures recall@k and MRR against.
 
+`q01`–`q30` is complete and contiguous; nothing is missing from it. What is
+missing from the **scorable** run is `q23` and `q24`, which are in the file and
+carry `requires_ocr: true` — they are answerable only from the raster price
+list, so a pipeline with no OCR step cannot reach them and they are excluded
+from the denominator. That is why the counts read 35 / 30 / 5 / 2 / 28, and it
+is not a numbering gap. The IDs are stable and are referenced by chapter number
+in the trap table above, so they are never renumbered.
+
 One JSON object per line:
 
 | Field | Type | Meaning |

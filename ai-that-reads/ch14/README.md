@@ -7,8 +7,8 @@ Two lanes over one store. One writes, the other only reads.
 | [`config.ts`](config.ts) | Every value that belongs to a model or to a corpus, in one place. |
 | [`ask.ts`](ask.ts) | The whole application in three calls: retrieve, generate, render. |
 | [`config.test.ts`](config.test.ts) | Three configuration checks, one of which asks the database. In `npm run test:live`. |
+| [`cli.ts`](cli.ts) | The entry point: a question in, the answer and its footnotes out. |
 | [`migrate.ts`](migrate.ts) | Chapter 7's "reversible in an afternoon" claim, as a program. |
-| `cli.ts` | **Not from the book.** The command line the chapter's `ask.ts` does not have. |
 
 ## Run it
 
@@ -55,8 +55,8 @@ The third of those is the useful one. It reads `atttypmod` — the same field a 
 
 ## Notes
 
-- **`ask.ts` as printed exports a function and has no command line.** The chapter's `npx tsx src/ask.ts "…"` needs the eight lines in `cli.ts`, which read the question, call `ask`, and print the citations and the unresolvable markers.
-- **The chapter's directory tree is not this directory's.** Chapter 14 draws the finished app as `src/load/`, `src/split.ts`, `src/store.ts` and so on, but the listings it prints are headed `ch14/config.ts` and import `../ch09/retrieve.js`. This repo follows the printed paths, because the book prints imports that have to resolve.
+- **`ask.ts` exports a function and has no command line, on purpose.** It is the seam an HTTP handler, a test or a queue worker calls, and none of those want a `process.exit` inside it. `cli.ts` is the entry point, and the chapter prints both.
+- **`migrate.ts` prints what it moved.** The row count, the wall clock and `points_count` afterwards, because a migration nobody counted is a migration taken on trust. Run it twice: the second run copies the same rows onto the same derived IDs and the point count does not move.
 - **`citable()` is the one place the projection happens.** `Reranked` carries metadata as `Record<string, unknown>` because that is what came out of a `jsonb` column; `Citable` is a `Pick` of four named fields. The casts are unchecked and the file says so. Index documents produced by somebody else's pipeline and this function is where a runtime schema check has to go.
 - **`context.map(citable)` preserves order, and that is not cosmetic.** Both `contextBlock` and `renderAnswer` derive a marker from an array position, independently. Reorder the array in between and every footnote in the answer points somewhere else.
 - **`SAMPLING` is empty and not by omission.** `claude-sonnet-5` returns a 400 for a non-default `temperature`, `top_p` or `top_k`. The first test in `config.test.ts` is what keeps it empty.

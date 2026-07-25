@@ -67,16 +67,17 @@ Tabs between the columns, so a copy out of the terminal lands in a spreadsheet a
 
 One question is **3.6 points of recall**. Refuse to act on a difference smaller than that.
 
-## The `sourceId` mismatch
+## Where `sourceId` is decided
 
-`supports` compares `hit.sourceId` against `questions.jsonl`'s `file`, which is spelled `markdown/warranty-policy.md`. Two of the book's own listings disagree about that spelling:
+`supports` compares `hit.sourceId` against `questions.jsonl`'s `file`, which is spelled `markdown/warranty-policy.md`. Exactly one stage produces that spelling, and everything else quotes it:
 
-- **`ch13/scan.ts`** sets `sourceId: relative(root, path)` → `markdown/warranty-policy.md`. ✅
-- **`ch03/load-*.ts`** set `sourceId: path` — the path they were handed. Driven from the package root that is `corpus/markdown/warranty-policy.md`. ❌
+- **`ch13/scan.ts`** sets `sourceId: relative(root, path)` → `markdown/warranty-policy.md`. That is the identity.
+- **`ch03/load-*.ts`** set `sourceId: path` — the path they were handed, because a loader is given one file and does not know where the corpus starts.
+- **`ch13/sync.ts`** restamps the loaded pages from `file.sourceId` **before** chunking, so `chunkId`, the metadata JSON and the `source_id` column all come from the scan's one value.
 
-In the live pipeline the column wins and `measure.ts` is unaffected: `ch13/store.ts` writes `source_id` from `scanCorpus`, and `ch08/hit.ts` reads `Hit.sourceId` out of that column. It is the copy inside the metadata JSON — and therefore `metadata.chunkId` — that carries the extra segment, which is what breaks chapter 11's `scoreCitations`.
+Drop that restamp and nothing throws: the column is still right, because `replaceSource` is passed the scan's value, so retrieval and `measure.ts` are unaffected. What breaks is `metadata.chunkId`, which is what chapter 11's `scoreCitations` splits on — it would compare `corpus/markdown/x.md` against `markdown/x.md` and report `false` for every question.
 
-`run-examples.ts` strips the prefix, with the reason written beside it, because it reads `metadata.sourceId` directly rather than going through the store.
+`run-examples.ts` does the same restamp, with the reason written beside it, because it reads `metadata.sourceId` directly rather than going through the store.
 
 ## Notes
 

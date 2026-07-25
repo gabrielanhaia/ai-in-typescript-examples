@@ -23,11 +23,14 @@ console.log(
 );
 
 for (const file of plan.changed) {
-  const chunks = await chunkPages(
-    await loadFile(file.path),
-    CHUNK_SIZE,
-    CHUNK_OVERLAP,
-  );
+  const pages = await loadFile(file.path);
+  // One identity, minted by the scan. A loader is handed one file and does
+  // not know where the corpus starts, so it stamps the path it was given;
+  // this is the stage that knows the root. Restamp before chunking, or
+  // `chunkId` and the `source_id` column below name different documents.
+  for (const page of pages) page.metadata.sourceId = file.sourceId;
+
+  const chunks = await chunkPages(pages, CHUNK_SIZE, CHUNK_OVERLAP);
 
   const rows = await embedChunks(chunks);
   await replaceSource(file.sourceId, file.hash, rows);

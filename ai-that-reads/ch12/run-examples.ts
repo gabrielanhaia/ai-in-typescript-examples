@@ -101,29 +101,17 @@ const chunks: Chunk[] = [];
 let units = 0;
 for (const file of onDisk) {
   const pages = await loadFile(file.path);
+  // The restamp ch13/sync.ts does, for the reason it does it: the loader
+  // stamps the path it was handed, and the scan is what knows the root.
+  // Without this the sourceId here is `corpus/markdown/x.md` and every
+  // comparison against questions.jsonl's `markdown/x.md` is false.
+  for (const page of pages) page.metadata.sourceId = file.sourceId;
   units += pages.length;
   chunks.push(...(await chunkPages(pages, CHUNK_SIZE, CHUNK_OVERLAP)));
 }
 
-// NOT FROM THE BOOK, and it is here because of a real disagreement between two
-// of the book's own listings. Chapter 3's loaders set `sourceId: path` — the
-// path they were handed — so driving them from the package root produces
-// `corpus/markdown/warranty-policy.md`. Chapter 13's `scanCorpus` sets
-// `sourceId: relative(root, path)` and produces `markdown/warranty-policy.md`,
-// which is the spelling in corpus/questions.jsonl and the spelling chapter 3's
-// own field comment describes ("Path relative to the corpus root").
-//
-// In the live pipeline the column wins, so chapter 12's `measure.ts` is
-// unaffected: ch13/store.ts writes `source_id` from `scanCorpus`, and
-// ch08/hit.ts reads `Hit.sourceId` out of that column. It is the copy inside
-// the metadata JSON that carries the extra segment, which is what breaks
-// chapter 11's `scoreCitations`. See ch12/README.md.
-const CORPUS_ROOT = "corpus/";
-
 const index = chunks.map((chunk) => ({
-  sourceId: chunk.metadata.sourceId.startsWith(CORPUS_ROOT)
-    ? chunk.metadata.sourceId.slice(CORPUS_ROOT.length)
-    : chunk.metadata.sourceId,
+  sourceId: chunk.metadata.sourceId,
   content: chunk.pageContent,
   terms: new Set(words(chunk.pageContent)),
 }));

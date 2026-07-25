@@ -2,7 +2,7 @@
 import type { Document } from "@langchain/core/documents";
 
 export interface SourceMetadata {
-  /** Path relative to the corpus root. Ch. 11 prints it in a citation. */
+  /** The document's identity: its path. Ch. 11 prints it in a citation. */
   sourceId: string;
   /** Human-readable heading for the citation, not the filename. */
   title: string;

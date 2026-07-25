@@ -36,9 +36,11 @@ const folders = all ? ["markdown", "html", "pdf"] : ["markdown/staff-handbook"];
 const onDisk = await scanCorpus("corpus", folders);
 const chunks: Chunk[] = [];
 for (const file of onDisk) {
-  chunks.push(
-    ...(await chunkPages(await loadFile(file.path), CHUNK_SIZE, CHUNK_OVERLAP)),
-  );
+  const pages = await loadFile(file.path);
+  // ch13/sync.ts's restamp, so the chunk texts and the `chunkId` on them are
+  // the ones a real freshness run produces and the cache keys line up.
+  for (const page of pages) page.metadata.sourceId = file.sourceId;
+  chunks.push(...(await chunkPages(pages, CHUNK_SIZE, CHUNK_OVERLAP)));
 }
 
 console.log(`${onDisk.length} documents, ${chunks.length} chunks\n`);
