@@ -25,7 +25,11 @@ services:
     ports:
       - "127.0.0.1:5432:5432"
     volumes:
-      - pgdata:/var/lib/postgresql/data
+      # Mounted at /var/lib/postgresql, NOT .../data. The PG18 images moved the
+      # data directory under a versioned subdirectory, so a volume mounted at
+      # the old path makes initdb refuse to start with "directory exists but is
+      # not empty". Verified: with /data the container exits 1 on first boot.
+      - pgdata:/var/lib/postgresql
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U braxby -d braxby"]
       interval: 5s
