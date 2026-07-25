@@ -1,0 +1,83 @@
+<!doctype html>
+<meta charset="utf-8" />
+<title>Ask</title>
+
+<form id="ask">
+  <input id="q" size="48" autocomplete="off" />
+  <button type="submit">Ask</button>
+</form>
+<pre id="out"></pre>
+
+<script type="module">
+  const form = document.getElementById("ask");
+  const input = document.getElementById("q");
+  const out = document.getElementById("out");
+  let source = null;
+  let conversation = null;
+
+  const stop = () => {
+    source?.close();
+    source = null;
+  };
+
+  let pending = "";
+  let scheduled = false;
+
+  const flush = () => {
+    scheduled = false;
+    if (pending === "") return;
+
+    const distance =
+      document.body.scrollHeight - (window.innerHeight + window.scrollY);
+    const wasAtBottom = distance < 8;
+
+    out.append(pending);
+    pending = "";
+
+    if (wasAtBottom) {
+      window.scrollTo(0, document.body.scrollHeight);
+    }
+  };
+
+  const paint = (text) => {
+    pending += text;
+    if (!scheduled) {
+      scheduled = true;
+      requestAnimationFrame(flush);
+    }
+  };
+
+  form.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    stop();
+
+    if (conversation === null) {
+      const res = await fetch("/session", { method: "POST" });
+      conversation = (await res.json()).id;
+    }
+
+    out.append(`\n\nyou> ${input.value}\n\nbot> `);
+    const question = encodeURIComponent(input.value);
+    input.value = "";
+
+    source = new EventSource(`/chat/${conversation}?q=${question}`);
+
+    source.addEventListener("token", (e) => {
+      paint(JSON.parse(e.data).text);
+    });
+
+    // done carries turn.finish.kind rather than a fixed "ok", so the page can
+    // mark a truncated or refused answer instead of showing it as finished.
+    source.addEventListener("done", (e) => {
+      if (e.data !== "complete") paint(`\n[${e.data}]`);
+      stop();
+    });
+
+    source.addEventListener("failed", (e) => {
+      paint(`\n[${e.data}]`);
+      stop();
+    });
+
+    source.onerror = stop;
+  });
+</script>

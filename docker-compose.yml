@@ -1,0 +1,23 @@
+# One service per book. Books that have not published their examples yet are not
+# listed here — a compose file must never reference a Dockerfile that isn't there.
+#
+#   docker compose run ai-that-answers ch03
+#   docker compose run ai-that-answers ch07/stream-cancel
+#   docker compose run ai-that-answers --list
+#
+# The key comes from .env in this directory, which compose reads for
+# interpolation. A key exported in your shell does not reach the container.
+
+services:
+  ai-that-answers:
+    build:
+      context: ./ai-that-answers
+    environment:
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+    # Chapter 8 and chapter 14 serve HTTP on 8787; chapter 8's session variant
+    # uses 8788. Publish both so `docker compose run --service-ports` reaches them.
+    ports:
+      - "8787:8787"
+      - "8788:8788"
+    stdin_open: true
+    tty: true

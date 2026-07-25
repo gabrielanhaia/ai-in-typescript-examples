@@ -1,0 +1,95 @@
+<!doctype html>
+<meta charset="utf-8" />
+<title>Ask (sessions)</title>
+
+<form id="ask">
+  <input id="q" size="48" autocomplete="off" />
+  <button type="submit">Ask via EventSource</button>
+  <button type="button" id="viaFetch">Ask via fetch</button>
+</form>
+<pre id="out"></pre>
+
+<script type="module">
+  const form = document.getElementById("ask");
+  const input = document.getElementById("q");
+  const out = document.getElementById("out");
+  const viaFetch = document.getElementById("viaFetch");
+  let source = null;
+
+  const stop = () => {
+    source?.close();
+    source = null;
+  };
+
+  let pending = "";
+  let scheduled = false;
+
+  const flush = () => {
+    scheduled = false;
+    if (pending === "") return;
+    out.append(pending);
+    pending = "";
+  };
+
+  const paint = (text) => {
+    pending += text;
+    if (!scheduled) {
+      scheduled = true;
+      requestAnimationFrame(flush);
+    }
+  };
+
+  // Two requests: POST the question, then open the stream on the returned ID.
+  // Keeps the payload out of the query string; the streaming code is unchanged.
+  form.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    stop();
+    out.textContent = "…";
+    let started = false;
+
+    const res = await fetch("/session", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ question: input.value }),
+    });
+    const { id } = await res.json();
+
+    source = new EventSource(`/chat/${id}`);
+
+    source.addEventListener("token", (e) => {
+      if (!started) {
+        out.textContent = "";
+        started = true;
+      }
+      paint(JSON.parse(e.data).text);
+    });
+
+    source.addEventListener("done", stop);
+    source.onerror = stop;
+  });
+
+  // The other answer: drop EventSource and read the response body yourself.
+  viaFetch.addEventListener("click", async () => {
+    stop();
+    out.textContent = "";
+
+    const controller = new AbortController();
+
+    const res = await fetch("/chat", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ question: input.value }),
+      signal: controller.signal,
+    });
+
+    const reader = res.body
+      .pipeThrough(new TextDecoderStream())
+      .getReader();
+
+    for (;;) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      paint(value);
+    }
+  });
+</script>

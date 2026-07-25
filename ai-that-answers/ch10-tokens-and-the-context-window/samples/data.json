@@ -1,0 +1,29 @@
+{
+  "wheel": {
+    "id": "WHL-4821",
+    "diameter_mm": 622,
+    "structure": "tension",
+    "load_path": "rim hangs from upper spokes; lower spokes go slack",
+    "spokes": [
+      { "position": 1, "tension_kgf": 108, "length_mm": 296, "trued": true },
+      { "position": 2, "tension_kgf": 111, "length_mm": 296, "trued": true },
+      { "position": 3, "tension_kgf": 104, "length_mm": 294, "trued": true },
+      { "position": 4, "tension_kgf": 112, "length_mm": 294, "trued": false },
+      { "position": 5, "tension_kgf": 97, "length_mm": 296, "trued": false },
+      { "position": 6, "tension_kgf": 109, "length_mm": 296, "trued": true }
+    ],
+    "stress_relieved": true,
+    "notes": [
+      "one missing spoke is rideable at low speed",
+      "uneven tension goes out of true before anything breaks",
+      "truing adjusts tension, it does not bend metal",
+      "a quarter turn moves the rim a fraction of a millimetre"
+    ],
+    "inspection": {
+      "by": "workshop",
+      "date": "2026-07-25",
+      "verdict": "pass",
+      "visible_difference_from_bad_wheel": false
+    }
+  }
+}

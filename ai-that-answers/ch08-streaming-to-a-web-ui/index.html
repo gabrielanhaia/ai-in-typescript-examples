@@ -1,0 +1,81 @@
+<!doctype html>
+<meta charset="utf-8" />
+<title>Ask</title>
+
+<form id="ask">
+  <input id="q" size="48" autocomplete="off" />
+  <button type="submit">Ask</button>
+</form>
+<pre id="out"></pre>
+
+<script type="module">
+  const form = document.getElementById("ask");
+  const input = document.getElementById("q");
+  const out = document.getElementById("out");
+  let source = null;
+
+  const stop = () => {
+    source?.close();
+    source = null;
+  };
+
+  // Batch incoming fragments and append once per frame. Auto-scroll only when
+  // the reader was already parked at the bottom before the append.
+  let pending = "";
+  let scheduled = false;
+
+  const flush = () => {
+    scheduled = false;
+    if (pending === "") return;
+
+    const distance =
+      document.body.scrollHeight -
+      (window.innerHeight + window.scrollY);
+    const wasAtBottom = distance < 8;
+
+    out.append(pending);
+    pending = "";
+
+    if (wasAtBottom) {
+      window.scrollTo(0, document.body.scrollHeight);
+    }
+  };
+
+  const paint = (text) => {
+    pending += text;
+    if (!scheduled) {
+      scheduled = true;
+      requestAnimationFrame(flush);
+    }
+  };
+
+  form.addEventListener("submit", (event) => {
+    event.preventDefault();
+    stop();
+
+    // Time to first token is short, not zero. Fill the gap deliberately, and
+    // have the first token replace the placeholder rather than append to it.
+    out.textContent = "…";
+    let started = false;
+
+    const q = encodeURIComponent(input.value);
+    source = new EventSource(`/chat?q=${q}`);
+
+    source.addEventListener("token", (e) => {
+      if (!started) {
+        out.textContent = "";
+        started = true;
+      }
+      paint(JSON.parse(e.data).text);
+    });
+
+    source.addEventListener("done", stop);
+
+    source.addEventListener("failed", (e) => {
+      out.textContent += `\n[${e.data}]`;
+      stop();
+    });
+
+    source.onerror = stop;
+  });
+</script>

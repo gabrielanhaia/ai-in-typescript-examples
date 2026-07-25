@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "target": "es2023",
+    "lib": ["es2023"],
+    "module": "nodenext",
+    "moduleResolution": "nodenext",
+    "types": ["node"],
+    "strict": true,
+    // Required: without it tsc fails inside @langchain/anthropic@1.5.2's own webSearch.d.ts,
+    // which references BetaWebSearchTool20250305 — a type @anthropic-ai/sdk@0.115.0 renamed.
+    "skipLibCheck": true,
+    "noEmit": true
+  },
+  "include": ["ch*/**/*.ts", "scripts/**/*.ts", "*.config.ts"],
+  "exclude": ["node_modules", "**/samples/**"]
+}

@@ -1,0 +1,16 @@
+A bicycle wheel is a structure that works entirely in tension. The rim does not
+sit on top of the spokes the way a cart wheel sits on its wooden spokes; it hangs
+from the ones above the hub while the ones below go slack under load. Every spoke
+is pulled tight when the wheel is built, and riding the bike simply moves that
+tension around the circle rather than adding to it. This is why a wheel that has
+lost a single spoke can still be ridden home gently, and why a wheel that has been
+built with uneven tension will go out of true long before anything actually breaks.
+It is also why truing a wheel is a matter of adjusting tension rather than bending
+metal back into shape: you turn a nipple a quarter of a turn, the rim moves a
+fraction of a millimetre toward that spoke, and the whole structure settles into a
+new balance. Wheelbuilders talk about a wheel being stress-relieved, which means
+the spokes have been squeezed hard enough after lacing that they have taken their
+final set and will not creak or unwind in the first hundred miles. None of this is
+visible from the outside, which is the interesting part. A good wheel and a bad
+wheel look identical on a shop floor, and the difference only shows up after a
+winter of potholes.

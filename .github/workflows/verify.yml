@@ -43,8 +43,8 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          # becomes `node-version-file: .nvmrc` once the runtime is pinned in docs/versions.md
-          node-version: 'lts/*'
+          # The runtime pin lives in .nvmrc and is recorded in docs/versions.md.
+          node-version-file: .nvmrc
           cache: npm
           cache-dependency-path: ${{ matrix.book }}/package-lock.json
       - name: Install exactly what is pinned
@@ -71,7 +71,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: 'lts/*'
+          node-version-file: .nvmrc
       - name: Install latest of every dependency
         working-directory: ${{ matrix.book }}
         run: npm install --no-package-lock

@@ -4,7 +4,7 @@ Runnable, CI-verified code examples for **AI in TypeScript**, a five-book series
 
 Every code listing printed in the books exists here, pinned to exact versions and verified on a schedule. The books explain *why*; this repo is *what you run*.
 
-> **Status: scaffold.** The books are being written. Each directory below fills in as its book is drafted, starting with *AI That Answers*. Watch or star the repo if you want the first examples when they land.
+> **Status: Book 1's examples are here.** [`ai-that-answers/`](ai-that-answers) holds every listing printed in *AI That Answers*, across all fourteen chapters, pinned and CI-verified. The other four directories fill in as their books are drafted.
 
 ## The series
 
@@ -26,15 +26,26 @@ cd ai-in-typescript-examples
 cp .env.example .env      # then put your API key in it
 ```
 
-Once a book's examples are published, each one runs in a single command with no local Node or TypeScript setup:
+Each example runs in a single command, with no local Node or TypeScript setup:
 
 ```bash
-docker compose run ai-that-answers ch03
+docker compose run ai-that-answers ch03                 # a chapter
+docker compose run ai-that-answers --list               # every listing
+docker compose run ai-that-answers ch07/stream-cancel   # a named listing
+docker compose run --service-ports ai-that-answers ch08 # anything serving HTTP
 ```
 
-Every example directory has a README stating what it does, the exact command, and the output you should expect.
+Each chapter folder carries its own README: the file list, the command, and what the run should print.
 
-*(`docker-compose.yml` lands with the first published example, so this repo never ships a compose file that references a Dockerfile that isn't here yet.)*
+**Two chapters run with no API key at all** and print the same output on every machine — `ch11` (the cost arithmetic) and `ch13` (the functions that should never be a model call). They are the two to try first.
+
+Prefer your own toolchain? `.nvmrc` pins the Node version:
+
+```bash
+cd ai-that-answers
+nvm use && npm ci
+npm run run-example -- ch03
+```
 
 ## Versions
 
@@ -44,9 +55,11 @@ A scheduled workflow runs every example against **both** the pinned versions and
 
 ## Your API key
 
-Examples read `process.env.ANTHROPIC_API_KEY` and fail with a clear message when it is missing. Copy `.env.example` to `.env` and put your key there. **Never commit `.env`** — it is git-ignored, and no key ever appears in this repo, in a code block, or in recorded output.
+Examples read `process.env.ANTHROPIC_API_KEY` and fail with a clear message when it is missing. Copy `.env.example` to `.env` and put your key there. **Never commit `.env`** — it is git-ignored, and no key ever appears in this repo, in a code block, or in recorded output. A CI job fails the build if one ever does.
 
-Examples default to a fast, inexpensive model and small token budgets. Each book's README states what running its full set costs, with the date that figure was checked.
+Examples default to a fast, inexpensive model and small token budgets. Each book's README says which of its examples make more than one call, and points at the rate table — with its verification date — rather than printing a total that was never measured on your account.
+
+**Nothing in CI spends money.** `npm run verify` is typechecks and unit tests only; the one test in Book 1 that calls the model is run deliberately with `npm run test:live`.
 
 ## License
 
