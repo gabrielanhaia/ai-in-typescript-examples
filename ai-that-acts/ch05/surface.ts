@@ -8,7 +8,7 @@ export const findOrders = defineTool(
   "find_orders",
   "Find a customer's recent orders from their email address. Returns " +
     "one line per order: order number, date, status and total. It does " +
-    "not return the items on an order — call get_order_status with an " +
+    "not return the items on an order — call get_order_items with an " +
     "order number for that. If the customer has already given you an " +
     "order number, use get_order_status directly instead of searching.",
   z.object({

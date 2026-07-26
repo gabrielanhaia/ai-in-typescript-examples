@@ -11,6 +11,7 @@ import { toolboxFor } from "./toolbox.js";
 const ctx = {
   customerId: "cust_4471",
   token: "test-token",
+  runId: "r_test",
   signal: AbortSignal.timeout(5_000),
 };
 

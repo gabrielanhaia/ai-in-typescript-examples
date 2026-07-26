@@ -197,9 +197,11 @@ const REQUIRES: Record<string, Need[]> = {
   "ch12/run-examples": [],
 
   "ch13/weekly-report": [],
+  "ch13/report-tools": [],
   "ch13/run-examples": [],
   "ch13/covering-note": ["anthropic"],
-  "ch13/report-agent": ["anthropic", "braxby"],
+  // Reads the diary in this process, so it needs a key and no container.
+  "ch13/report-agent": ["anthropic"],
 
   "ch14/config": [],
   "ch14/system": [],

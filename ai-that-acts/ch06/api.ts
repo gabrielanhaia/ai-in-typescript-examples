@@ -34,7 +34,6 @@ export async function apiPost(
   path: string,
   body: unknown,
   ctx: ToolContext,
-  runId: string,
 ): Promise<ApiOutcome> {
   const response = await fetch(new URL(path, BASE), {
     method: "POST",
@@ -43,7 +42,7 @@ export async function apiPost(
     headers: {
       "content-type": "application/json",
       authorization: `Bearer ${ctx.token}`,
-      "x-braxby-run": runId,
+      "x-braxby-run": ctx.runId,
       "x-braxby-actor": "assistant",
     },
   });

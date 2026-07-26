@@ -188,28 +188,14 @@ Small, deliberate, and listed here so nothing is a surprise.
 - **One manifest, not one per chapter**, with the same exact pins.
 - **Directories are named after the chapter**, exactly as the book prints them,
   so `../ch03/toolbox.js` resolves.
-- **`ch14/no-sampling.test.ts` walks the package root, not `"src"`.** The
-  chapter's listing says `sources("src")`; there is no `src` here, because
-  chapter 14's own tree puts `ch02` … `ch14` at the top level. A second test
-  beside it asserts the walk reaches something, because a grep that finds
-  nothing passes.
 - **Chapter 6's toolbox has all six tools on it.** The chapter prints one;
   chapter 5's table settles the surface at six and chapter 12 says it goes
   from six to seven, so the other five are written here in the shape of the
-  printed one. `toolboxFor` takes an optional run id, because
-  `bookSlot(ctx, runId)` needs one and the printed signature has nowhere to
-  get it.
-- **`ch09/conclude.ts` takes the system prompt as an argument.** The chapter
-  prints the call and not the signature; chapter 14's finished prompt is
-  chapter 4's plus two additions, and the concluding call has to carry the
-  same one the run did.
+  printed one.
 - **`ch10/hitl.ts` is not wired into anything**, and the `new Command({ resume:
   … })` block beside it in the chapter has no file at all. Both need a
   checkpointer, the checkpointer is in `@langchain/langgraph`, and that package
   is deliberately not a dependency. The chapter says so.
-- **`ch13/report-agent.ts` runs against the surface this application has.** The
-  chapter tables four tools for it, two of which do not exist here and one of
-  which — `send_email` — is at the top of chapter 8's ladder.
 - **Nine files are not listings from the book.** Every one says so on its first
   line: the seven `chNN/run-examples.ts` drivers and `ch11/round-trip.ts`, so
   that chapters made entirely of exports have something to run, plus

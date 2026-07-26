@@ -8,7 +8,8 @@ call in it.
 | [`weekly-report.ts`](weekly-report.ts) | The version that should ship. Every count counted, and the threshold is a constant. | — |
 | [`covering-note.ts`](covering-note.ts) | One model call, not a loop. Facts in, phrasing out, and a truncated note falls back to the figures. | key |
 | [`weekly-report.test.ts`](weekly-report.test.ts) | The boundary case at exactly the threshold. In `npm run verify`. | — |
-| [`report-agent.ts`](report-agent.ts) | Built as a loop, for comparison rather than for production. Spends tokens. | key + service |
+| [`report-tools.ts`](report-tools.ts) | The three read-only tools the agent version is given, and the one — `send_email` — it deliberately is not. | — |
+| [`report-agent.ts`](report-agent.ts) | Built as a loop, for comparison rather than for production. Spends tokens. | key |
 | `run-examples.ts` | **Not from the book.** The script version, run. The chapter default. | — |
 
 ## Run it
@@ -34,13 +35,17 @@ version, where the cut-off lives only as a tendency and shifts week to week.
 `weekly-report.test.ts` has no counterpart on the agent side, because there is
 nothing numeric there to assert against.
 
-## Where this differs from the page
+## The tool that is not on the surface
 
-The chapter tables a four-tool surface for the agent version: `list_bookings`,
-`get_booking`, `find_orders` and `send_email`. Two of those do not exist in
-this repository, and `send_email` is the one that cannot be undone — the book
-puts external side effects at the top of chapter 8's ladder and argues they
-should usually not be on a surface at all. So `report-agent.ts` runs the
-brief, the nightly ceilings and the loop against the surface the application
-actually has. The step count still moves week to week, which is the chapter's
-point.
+The agent version's obvious fourth tool is `send_email`, and it is not here.
+An email has already reached a person outside the building and there is no
+undo, which puts it on the top rung of chapter 8's ladder; chapter 13's own
+"what rules one out" section names an unattended batch with `send_email` on
+the surface as a thing that rules a loop out. So both versions of this report
+end the same way — the caller sends the finished text, once, from a scheduled
+entry — and the only thing that differs between them is who chose the
+sequence, which is the one variable this chapter is about.
+
+That also keeps the runnable version honest: every tool `report-agent.ts` can
+reach is a read, so an unattended loop left in a repository is bounded by
+chapter 9's ceilings and by nothing else.

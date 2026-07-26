@@ -41,3 +41,36 @@ export async function bookingsBetween(
     part: row.part,
   }));
 }
+
+/** One booking by its reference. Chapter 13's agent version of the weekly
+ *  report reaches this through `get_booking`; the version that ships never
+ *  needs it, because it has the whole week in hand already. */
+export async function bookingFor(
+  reference: string,
+): Promise<Booking | undefined> {
+  seed();
+  const row = db()
+    .prepare(
+      "SELECT reference, status, job, waiting_days, part" +
+        " FROM workshop_bookings WHERE reference = ?",
+    )
+    .get(reference) as
+    | {
+        reference: string;
+        status: Booking["status"];
+        job: string;
+        waiting_days: number;
+        part: string;
+      }
+    | undefined;
+
+  if (row === undefined) return undefined;
+
+  return {
+    reference: row.reference,
+    status: row.status,
+    job: row.job,
+    waitingDays: row.waiting_days,
+    part: row.part,
+  };
+}

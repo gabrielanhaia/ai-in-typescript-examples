@@ -22,17 +22,16 @@ export interface Limits {
   readonly maxWallMs: number;
 }
 
-/** Somebody is waiting at the other end of this one. A nightly job
- *  picks the other profile. */
+/** Somebody is waiting at the other end of this one. */
 export const INTERACTIVE: Limits = {
   maxSteps: 8,
   maxTokens: 120_000,
   maxWallMs: 60_000,
 };
 
-/** The unattended profile. Note where it differs: mostly the clock. Removing
- *  the person at the other end buys patience for slow dependencies, not extra
- *  reasoning. */
+/** The unattended profile. Note where it differs: mostly the clock.
+ *  Removing the person at the other end buys patience for slow
+ *  dependencies, not extra reasoning. */
 export const NIGHTLY: Limits = {
   maxSteps: 12,
   maxTokens: 400_000,

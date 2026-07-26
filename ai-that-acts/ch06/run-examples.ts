@@ -10,12 +10,14 @@ import { sessionFor } from "./session.js";
 const one = sessionFor({
   customerId: "cust_4471",
   token: "token-for-4471",
+  runId: "r_8f21",
   signal: AbortSignal.timeout(1_000),
 });
 
 const two = sessionFor({
   customerId: "cust_9002",
   token: "token-for-9002",
+  runId: "r_8f22",
   signal: AbortSignal.timeout(1_000),
 });
 

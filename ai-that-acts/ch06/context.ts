@@ -6,6 +6,9 @@ export interface ToolContext {
   /** Scoped to that customer, short-lived, read-only unless the tool
    *  it is handed to needs otherwise. */
   readonly token: string;
+  /** The run this tool call belongs to, so the agent's log line and the
+   *  service's access log can be read side by side. */
+  readonly runId: string;
   /** Aborted when the run ends, for any reason (chapter 9). */
   readonly signal: AbortSignal;
 }

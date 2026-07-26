@@ -6,12 +6,12 @@ than in a schema, and a projection at the boundary.
 
 | File | What it does | Needs |
 |---|---|---|
-| [`context.ts`](context.ts) | `ToolContext` — the customer, the token, the run's signal. Arrives by closure, never as an argument. | — |
+| [`context.ts`](context.ts) | `ToolContext` — the customer, the token, the run id, the run's signal. Arrives by closure, never as an argument. | — |
 | [`toolbox.ts`](toolbox.ts) | The six-tool surface. `get_order_status` is the printed one; the other five are chapter 5's table. | — |
 | [`session.ts`](session.ts) | The two things the loop needs, derived once per request. | — |
 | [`api.ts`](api.ts) | `apiGet` and `apiPost`: a per-call deadline composed with the run's signal, and the two headers that make the logs join up. | service |
 | [`summarise.ts`](summarise.ts) | An allowlist projection. A field the orders service grows one day is a field this ignores. | — |
-| [`book-slot.ts`](book-slot.ts) | The first tool that changes something. The `slot_id` is an argument the model cannot invent. | service |
+| [`book-slot.ts`](book-slot.ts) | The first tool that changes something. The `slot_id` is an argument the model cannot invent, and this tool is where it comes from. | service |
 | [`identity-antipattern.ts`](identity-antipattern.ts) | The schema to never write. Nothing imports it. | — |
 | [`toolbox.test.ts`](toolbox.test.ts) | Two tests, no key, **service required**. In `npm run test:live`. | service |
 | `run-examples.ts` | **Not from the book.** Prints the surface and the property no single listing shows. The chapter default. | — |
@@ -45,11 +45,13 @@ by the parse and never turns into a request.
 
 The chapter prints one tool. Chapter 5's table settles the surface at six and
 chapter 12 says it goes from six to seven, so all six are here, written in the
-shape of the printed one. `toolboxFor` also takes an optional second argument,
-the run id, because `bookSlot(ctx, runId)` needs one and the printed
-`toolboxFor(ctx)` has nowhere to get it.
+shape of the printed one.
 
-The six-tool surface has **no diary-read tool on it**, so there is nowhere for
-the model to learn a `slot_id` from. `book_workshop_slot` therefore appends
-the free slots to its own failure sentence, which is the cheapest repair
-available without adding a seventh tool the book does not have.
+The body of `offering` in [`book-slot.ts`](book-slot.ts) is not printed. The
+chapter prints the branch that calls it and says what it does: the six-tool
+surface has **no diary-read tool on it**, so `book_workshop_slot` is the only
+place a `slot_id` can come from, and its unbookable branch answers with the
+times the diary has free. Read and write are one tool here because the
+surface is deliberately small — the seventh tool you would add on the day
+workshop booking is more than a corner of the traffic is
+`list_workshop_slots`.

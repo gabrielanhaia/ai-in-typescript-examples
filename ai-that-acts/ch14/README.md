@@ -21,7 +21,7 @@ your key already in `.env`:
 ```bash
 docker compose up -d
 npm ci
-npx tsx ch14/cli.ts \
+node --env-file-if-exists=.env --import tsx ch14/cli.ts \
   "The rear wheel you built for me turned up buckled. Order ORD-4471.
    What happens now, and can I have my money back?"
 ```
@@ -36,9 +36,11 @@ than described in a README.
 Then twice more: once with `--trace`, once answering `y`.
 
 **One thing about that third command.** `npx tsx` does not read `.env`, so a
-key sitting in a file is not a key the process can see. Either export it, or
-go through the dispatcher, which passes `--env-file-if-exists` for both
-`../.env` and `.env`:
+key sitting in a file is not a key the process can see — which is why the
+command above is `node --env-file-if-exists=.env --import tsx` and not `npx
+tsx`. Plain `--env-file` would be worse than useless on a clone that has no
+`.env` yet: Node exits 9 with `node: .env: not found` before your code runs.
+The dispatcher does the same thing for both `../.env` and `.env`:
 
 ```bash
 npm run run-example -- ch14 "…" --trace
@@ -82,12 +84,12 @@ SDK type-defines all three anyway, so a listing that sets one compiles clean
 and fails in production. The type system has been told this parameter is fine.
 A grep over your own source, in the test suite, is the only guard available.
 
-**One deviation from the page:** the chapter's listing walks `"src"`. This
-repository has no `src` — chapter 14's own tree puts `ch02` … `ch14` at the top
-level, which is what makes `from "../ch04/loop.js"` resolve — so the walk
-starts at the package root. There is a second test beside it asserting that
-the walk reaches something, because a grep that finds nothing is a grep that
-passes.
+The walk starts at the package root, because that is where the listings are:
+chapter 14's own tree puts `ch02` … `ch14` at the top level, which is what
+makes `from "../ch04/loop.js"` resolve, and there is no `src` to walk. A
+second test beside it asserts the walk reaches at least sixty files and
+`ch04/loop.ts` among them, because a grep that finds nothing is a grep that
+passes, and a guard that can pass vacuously is worse than no guard.
 
 ## What the run costs
 

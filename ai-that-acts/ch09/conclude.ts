@@ -1,10 +1,11 @@
-// PRINTED IN CHAPTER 9 as `ch09/conclude.ts` — the final model call, and the
-// four sentences in `WHY`.
+// PRINTED IN CHAPTER 9 as `ch09/conclude.ts` — the signature, the final model
+// call, and the four sentences in `WHY`.
 //
-// NOT PRINTED: the function around it, and the `Finished` shape every ending
-// comes back as. The system prompt arrives as an argument rather than as an
-// import, because chapter 14's finished prompt is chapter 4's plus two
-// additions and the concluding call has to carry the same one the run did.
+// NOT PRINTED: the `Finished` shape every ending comes back as, and the two
+// lines of the cancelled branch the chapter elides with a comment. The system
+// prompt arrives as an argument rather than as an import, because chapter
+// 14's finished prompt is chapter 4's plus two additions and the concluding
+// call has to carry the same one the run did — which the chapter now says.
 import Anthropic from "@anthropic-ai/sdk";
 import type {
   Message,
@@ -48,9 +49,9 @@ export async function conclude(
       model: "claude-sonnet-5",
       max_tokens: 1024,
       system:
-        `${system}\n\n${WHY[stop.kind]} Answer now with what you already ` +
-        `know. Say plainly which part of the request you could not ` +
-        `finish. Do not promise to keep working on it.`,
+        `${system}\n\n${WHY[stop.kind]} Answer now with what you ` +
+        `already know. Say plainly which part of the request you ` +
+        `could not finish. Do not promise to keep working on it.`,
       tools: session.definitions,
       tool_choice: { type: "none" },
       messages,

@@ -49,10 +49,7 @@ const Part = z.object({
   restock: z.string().nullable(),
 });
 
-export function toolboxFor(
-  ctx: ToolContext,
-  runId = "r_local",
-): RegisteredTool[] {
+export function toolboxFor(ctx: ToolContext): RegisteredTool[] {
   return [
     defineTool(
       "get_order_status",
@@ -193,7 +190,7 @@ export function toolboxFor(
       },
     ),
 
-    bookSlot(ctx, runId),
+    bookSlot(ctx),
     refundTool(ctx),
   ];
 }

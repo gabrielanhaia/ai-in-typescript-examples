@@ -4,11 +4,11 @@
 // the build stops. Types cannot catch it: they describe what the SDK will
 // send, not what the model will accept.
 //
-// ONE DEVIATION FROM THE PAGE: the chapter walks `"src"`. This repository has
-// no `src` directory — chapter 14's own tree puts `ch02` … `ch14` at the top
-// level, which is what makes `from "../ch04/loop.js"` resolve — so the walk
-// starts at the package root instead. A wrong path here is the worst kind of
-// wrong: a walk that finds nothing passes.
+// The walk starts at the package root, which is where the listings are:
+// chapter 14's tree puts `ch02` … `ch14` at the top level, which is what makes
+// `from "../ch04/loop.js"` resolve, and there is no `src` directory to walk. A
+// wrong path here is the worst kind of wrong, because a walk that finds
+// nothing passes — which is what the second test is for.
 import { readFileSync, readdirSync } from "node:fs";
 import { join } from "node:path";
 import { expect, test } from "vitest";

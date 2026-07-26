@@ -4,8 +4,13 @@
 // `run` hands a value back rather than writing to a terminal, so a route, a
 // worker or a test can drive it. Deciding what a person sees happens here.
 //
-//   npx tsx ch14/cli.ts "<the customer's message>"
+// `tsx` does not read a `.env`, so the key is loaded by Node and not by the
+// runner — `--env-file-if-exists` rather than `--env-file`, because a clone
+// with no `.env` yet must still start:
+//
+//   node --env-file-if-exists=.env --import tsx ch14/cli.ts "<message>"
 //   npm run run-example -- ch14 "<the customer's message>" --trace
+import { randomUUID } from "node:crypto";
 import { trace } from "../ch04/trace.js";
 import { cliReviewer } from "../ch08/cli.js";
 import { citationsIn } from "../ch12/cited.js";
@@ -25,7 +30,12 @@ const signal = AbortSignal.any([
 
 try {
   const out = await run(
-    { customerId: "cust_4471", token: "token-for-4471", signal },
+    {
+      customerId: "cust_4471",
+      token: "token-for-4471",
+      runId: `r_${randomUUID().slice(0, 4)}`,
+      signal,
+    },
     question,
     cliReviewer(),
   );

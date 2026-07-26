@@ -35,7 +35,13 @@ export async function run(
   for (;;) {
     const stop = ledger.exceeded() ?? stalled(repeats);
     if (stop !== undefined) {
-      const ended = await conclude(messages, session, stop, ledger, SYSTEM);
+      const ended = await conclude(
+        messages,
+        session,
+        stop,
+        ledger,
+        SYSTEM,
+      );
       return { ...ended, messages, sources };
     }
 
