@@ -1,0 +1,352 @@
+[
+  {
+    "chunkId": "order-lifecycle-and-statuses.md#00",
+    "sourceId": "markdown/order-lifecycle-and-statuses.md",
+    "title": "Order lifecycle and statuses",
+    "section": "The statuses",
+    "content": "| Status | Set by | Customer sees | Means |\n|---|---|---|---|\n| `received` | checkout | Order received | Payment authorised, not yet paid |\n| `paid` | payment processor | Order confirmed | Funds captured; the order enters the pick queue |\n| `held-verification` | fraud rules | Order on hold | Over £400 to a non-billing address; a call is due |\n| `held-stock` | stock system | Awaiting stock | One or more lines short at pick |\n| `picking` | goods in | Being prepared | On a picker's list |\n| `packed` | goods in | Being prepared | Boxed, labelled, waiting for the carrier |\n| `dispatched` | carrier scan | Dispatched | Carrier has it; tracking is live |\n| `delivered` | carrier scan | Delivered | Carrier has recorded delivery |\n| `collection-ready` | workshop | Ready to collect | At the workshop counter, held fourteen days |\n| `cancelled` | support or customer | Cancelled | No goods shipped; refund due |\n| `returned` | returns desk | Return received | Graded, refund authorised or escalated |\n| `closed` | nightly job | (nothing) | Ninety days after delivery with no open ticket |"
+  },
+  {
+    "chunkId": "order-lifecycle-and-statuses.md#01",
+    "sourceId": "markdown/order-lifecycle-and-statuses.md",
+    "title": "Order lifecycle and statuses",
+    "section": "Ordering in the pick queue",
+    "content": "The pick queue is ordered by the time the order reached `paid`, not by the time\nthe customer clicked buy. An order held for verification loses its place only\nfor the duration of the hold; when it is released it goes back in at its\noriginal payment time rather than at the back.\n\nTrade orders sit in the same queue as retail orders. There is no priority in\neither direction and there never has been, whatever a customer has been told."
+  },
+  {
+    "chunkId": "order-lifecycle-and-statuses.md#02",
+    "sourceId": "markdown/order-lifecycle-and-statuses.md",
+    "title": "Order lifecycle and statuses",
+    "section": "Short lines",
+    "content": "A line that cannot be picked puts the whole order into `held-stock`. Fulfilment\nthen chooses one of three things, and tells the customer which:\n\n1. **Split the order.** Ship what is available now and the rest when it lands.\n   No extra delivery charge. This is the default when the missing line is more\n   than three days out.\n2. **Hold the order.** Ship everything together when the stock arrives. Chosen\n   when the missing line is due within three days.\n3. **Cancel the line.** Refund it and ship the rest. Chosen when there is no\n   arrival date.\n\nWe never substitute a different part for a short line, and we never guess an\narrival date. \"We do not have a date\" is an acceptable thing to say and an\ninvented date is not."
+  },
+  {
+    "chunkId": "order-lifecycle-and-statuses.md#03",
+    "sourceId": "markdown/order-lifecycle-and-statuses.md",
+    "title": "Order lifecycle and statuses",
+    "section": "Cancellation",
+    "content": "A customer can cancel any time before `picking`. Between `picking` and\n`dispatched` we will try, and we will be honest that we may not catch it. After\n`dispatched` it is a return, and the returns policy applies.\n\nAn order cancelled before dispatch is refunded in full including delivery,\nwithin five working days."
+  },
+  {
+    "chunkId": "order-lifecycle-and-statuses.md#04",
+    "sourceId": "markdown/order-lifecycle-and-statuses.md",
+    "title": "Order lifecycle and statuses",
+    "section": "What the customer is emailed",
+    "content": "Order confirmation at `paid`. Dispatch confirmation with tracking at\n`dispatched`. A collection-ready email at `collection-ready`, followed by a\nreminder on day seven and a final one on day thirteen.\n\nNothing is emailed at `picking`, `packed` or `closed`. A customer who asks why\nthey got no email between confirmation and dispatch has found the answer, not a\nbug."
+  },
+  {
+    "chunkId": "order-lifecycle-and-statuses.md#05",
+    "sourceId": "markdown/order-lifecycle-and-statuses.md",
+    "title": "Order lifecycle and statuses",
+    "section": "Status is not a promise",
+    "content": "A status describes where an order is, not when it will arrive. Delivery\nestimates come from the shipping policy and from the carrier, and a support\nreply should quote the estimate rather than reading a date off the status\nscreen."
+  },
+  {
+    "chunkId": "returns-and-refunds.md#00",
+    "sourceId": "markdown/returns-and-refunds.md",
+    "title": "Returns and refunds",
+    "section": "The window",
+    "content": "**Customers may return an unused item within 30 days of delivery for a full\nrefund.** The item must be unfitted, in resaleable condition, and in its\noriginal packaging with any tags, backing card or instruction sheet still with\nit.\n\nThirty days is a policy, not a statutory minimum, and it is deliberately longer\nthan the statutory cooling-off period so that nobody has to count weekends."
+  },
+  {
+    "chunkId": "returns-and-refunds.md#01",
+    "sourceId": "markdown/returns-and-refunds.md",
+    "title": "Returns and refunds",
+    "section": "What \"unfitted\" means",
+    "content": "A part is unfitted if it has not been mounted on a bicycle. In practice:\n\n- A caliper that has been bolted on, even briefly, is fitted.\n- A cassette that has been on a freehub body has almost always marked the\n  splines and is fitted.\n- A chain that has been sized or run through a drivetrain is fitted.\n- Tyres are fitted the moment they have been on a rim. A tyre that has been\n  test-fitted and removed will show bead marks and we will see them.\n- A frame that has had a bottom bracket or headset pressed into it is fitted.\n- Clothing and helmets may be tried on. A helmet with a scuffed shell or a\n  compressed liner is not resaleable.\n\nIf you are not sure whether fitting a part will cost you the return, ask before\nyou fit it. The answer is usually yes."
+  },
+  {
+    "chunkId": "returns-and-refunds.md#02",
+    "sourceId": "markdown/returns-and-refunds.md",
+    "title": "Returns and refunds",
+    "section": "Items we cannot take back",
+    "content": "- Anything cut to length: cables, outers, hydraulic hose, steerer tubes, bar\n  tape that has been unwound and applied.\n- Tubeless sealant and any opened liquid.\n- Special-order items, which are marked as such on the product page before the\n  order is placed.\n- Gift vouchers.\n- Anything returned without its original packaging where that packaging is part\n  of how we resell it — a boxed wheelset, for example."
+  },
+  {
+    "chunkId": "returns-and-refunds.md#03",
+    "sourceId": "markdown/returns-and-refunds.md",
+    "title": "Returns and refunds",
+    "section": "How to return something",
+    "content": "1. Start a return at `www.braxbycycles.example/returns` with the order number\n   and the email address on the order.\n2. Print the prepaid label. UK returns are free. Republic of Ireland and EU\n   returns are at the customer's cost unless the item is faulty.\n3. Pack the item as it arrived and attach the label to the outside of the\n   outer box, not to the product box.\n4. Drop it at any carrier point."
+  },
+  {
+    "chunkId": "returns-and-refunds.md#04",
+    "sourceId": "markdown/returns-and-refunds.md",
+    "title": "Returns and refunds",
+    "section": "Refunds",
+    "content": "A refund is issued to the original payment method within five working days of\nthe return arriving at the returns unit. Card refunds usually clear within a\nfurther three working days; that part is the bank's timetable, not ours.\n\nWe refund the original outbound standard delivery charge when the whole order\nis returned. We do not refund the difference where the customer chose next-day\ndelivery, and we do not refund the outbound charge on a partial return."
+  },
+  {
+    "chunkId": "returns-and-refunds.md#05",
+    "sourceId": "markdown/returns-and-refunds.md",
+    "title": "Returns and refunds",
+    "section": "Exchanges",
+    "content": "We do not process exchanges as a single transaction. Return the item for a\nrefund and place a new order. This is slower to describe and faster in\npractice, because the new order ships as soon as it is placed rather than\nwaiting for the return to arrive."
+  },
+  {
+    "chunkId": "returns-and-refunds.md#06",
+    "sourceId": "markdown/returns-and-refunds.md",
+    "title": "Returns and refunds",
+    "section": "Faulty items",
+    "content": "A faulty item is not a return, it is a warranty claim, and the warranty policy\ngoverns it. The practical difference for the customer is that carriage is\nalways ours and the 30-day window does not apply.\n\nIf an item arrives damaged in transit, tell us within three working days of\ndelivery so that we can raise it with the carrier. After that the carrier will\nnot accept the claim and we have to treat it as a warranty question instead,\nwhich is slower for everyone."
+  },
+  {
+    "chunkId": "returns-and-refunds.md#07",
+    "sourceId": "markdown/returns-and-refunds.md",
+    "title": "Returns and refunds",
+    "section": "Trade accounts",
+    "content": "Trade returns are governed by the trade account terms and not by this document.\nThe headline difference is that trade returns of non-stock items carry a\nrestocking charge."
+  },
+  {
+    "chunkId": "service-intervals.md#00",
+    "sourceId": "markdown/service-intervals.md",
+    "title": "Recommended service intervals",
+    "section": "Brakes",
+    "content": "**Hydraulic disc brakes should be bled every 12 months.** Mineral oil and DOT\nfluid both take on water over time, and a lever that has gone slightly long\nover a season is usually a fluid problem rather than a pad problem.\n\n**Hydraulic disc brakes used for wet-weather commuting should be bled every 6\nmonths.** Year-round commuting, winter road riding and regular wet gravel all\ncount. The mechanism is the same; the rate is roughly double.\n\nPads are inspected every 500 km and replaced at 1 mm of friction material\nremaining above the backing plate. Rotors are replaced at 1.5 mm thickness.\n\nRim brakes: pads inspected every 500 km, cables and outers replaced every 12\nmonths, and the braking surface checked against the manufacturer's wear\nindicator at every service."
+  },
+  {
+    "chunkId": "service-intervals.md#01",
+    "sourceId": "markdown/service-intervals.md",
+    "title": "Recommended service intervals",
+    "section": "Drivetrain",
+    "content": "| Task | Interval |\n|---|---|\n| Chain wear check | Every 1,000 km |\n| Chain replacement | At 0.5% elongation on an 11- or 12-speed chain |\n| Cassette replacement | Typically every third chain |\n| Chainring inspection | Every 3,000 km |\n| Gear cable and outer replacement | Every 12 months, or every 6 months for winter use |\n| Derailleur hanger alignment check | At every service and after any fall |\n\nA chain replaced on time is the cheapest maintenance there is. A chain replaced\nlate takes the cassette with it, and often the chainrings after that."
+  },
+  {
+    "chunkId": "service-intervals.md#02",
+    "sourceId": "markdown/service-intervals.md",
+    "title": "Recommended service intervals",
+    "section": "Wheels",
+    "content": "Wheel true and tension check every 2,000 km. A new wheel or a workshop-built\nwheel should come back at 300 km for a first re-tension; spokes bed in and the\nfirst check is not optional if the warranty on the build is to hold.\n\nHub bearings: inspected every 5,000 km, serviced or replaced when there is\ndetectable play or roughness. Sealed cartridge bearings are replaced rather\nthan serviced.\n\nTubeless sealant is topped up every 3 months and replaced entirely every 6\nmonths. A tyre that has been standing unridden for a season will usually need\nthe sealant scraped out rather than topped up."
+  },
+  {
+    "chunkId": "service-intervals.md#03",
+    "sourceId": "markdown/service-intervals.md",
+    "title": "Recommended service intervals",
+    "section": "Frame and contact points",
+    "content": "Headset service every 12 months. **Headsets on bikes ridden through the winter\nshould be serviced every 6 months**, because the failure is corrosion in the\nlower bearing race and it is driven by road salt rather than by distance.\n\nBottom bracket inspected every 5,000 km. Seatpost removed, cleaned and\nregreased every 12 months — on carbon frames, with assembly compound rather\nthan grease, and to the frame manufacturer's torque figure.\n\nBolt torque check across the whole bike every 6 months, and always after\ntravelling with the bike disassembled."
+  },
+  {
+    "chunkId": "service-intervals.md#04",
+    "sourceId": "markdown/service-intervals.md",
+    "title": "Recommended service intervals",
+    "section": "What a full service covers",
+    "content": "The workshop's full service is a fixed list, and it is on the workshop price\nlist. It includes a bleed, a drivetrain clean and measure, a wheel true and\ntension, a headset and bottom bracket check, a bolt torque check, and a gear\nand brake set-up. It does not include parts, and it does not include a wheel\nrebuild."
+  },
+  {
+    "chunkId": "service-intervals.md#05",
+    "sourceId": "markdown/service-intervals.md",
+    "title": "Recommended service intervals",
+    "section": "After a crash",
+    "content": "Anything that has hit the ground hard comes in for an inspection before it goes\nback out, whatever the intervals above say. The specific checks are the\nderailleur hanger, the bar and stem for creases and marks, the frame at the\nhead tube and the down tube, and the wheels for a flat spot. Carbon components\nthat have taken an impact are replaced rather than inspected and passed."
+  },
+  {
+    "chunkId": "shipping-and-delivery.md#00",
+    "sourceId": "markdown/shipping-and-delivery.md",
+    "title": "Shipping and delivery",
+    "section": "Where we ship",
+    "content": "Braxby Cycles ships to the United Kingdom, the Republic of Ireland and the\nEuropean Union. We do not ship anywhere else, and the checkout will not accept\nan address outside those territories."
+  },
+  {
+    "chunkId": "shipping-and-delivery.md#01",
+    "sourceId": "markdown/shipping-and-delivery.md",
+    "title": "Shipping and delivery",
+    "section": "United Kingdom",
+    "content": "Standard delivery is priced by the weight of the whole basket, in three bands.\n\n| Basket weight | Standard delivery |\n|---|---|\n| Up to 2 kg | £3.99 |\n| Over 2 kg and up to 10 kg | £6.99 |\n| Over 10 kg | £11.99 |\n\n**Standard UK delivery is free on orders over £60.** The threshold is the order\nvalue after any discount and before delivery, so a £62 basket with a 10%\ndiscount code applied does not qualify.\n\nStandard delivery is two to three working days. It is not a tracked service\nbelow 2 kg; above 2 kg it is.\n\nNext-day delivery is £7.99 regardless of weight, for orders placed before 14:00\nMonday to Friday. An order placed at 14:01 on a Friday is picked on Monday and\ndelivered on Tuesday. We say this plainly because it is the single most common\ncomplaint the support inbox receives.\n\nWe do not deliver on Sundays. Saturday delivery is available on the next-day\nservice for orders placed before 14:00 on a Friday, at £11.99."
+  },
+  {
+    "chunkId": "shipping-and-delivery.md#02",
+    "sourceId": "markdown/shipping-and-delivery.md",
+    "title": "Shipping and delivery",
+    "section": "Republic of Ireland",
+    "content": "A flat £9.99, three to five working days, tracked. Duties and taxes are paid by\nus; the customer pays nothing on delivery."
+  },
+  {
+    "chunkId": "shipping-and-delivery.md#03",
+    "sourceId": "markdown/shipping-and-delivery.md",
+    "title": "Shipping and delivery",
+    "section": "European Union",
+    "content": "A flat £14.99, four to seven working days, tracked, delivered duty paid. Some\ndestinations are slower than the stated band and we do not guarantee the upper\nfigure for the islands."
+  },
+  {
+    "chunkId": "shipping-and-delivery.md#04",
+    "sourceId": "markdown/shipping-and-delivery.md",
+    "title": "Shipping and delivery",
+    "section": "Click and collect",
+    "content": "Orders can be collected from the Manchester workshop. Collection is free, there\nis no minimum order, and the order is held for fourteen days. Collection is\navailable during workshop hours only, which are in the staff handbook and on\nthe workshop booking page — the trade counter and the workshop keep the same\nhours.\n\nThe workshop closes on 14 August each year for stock-taking. Online orders are\nunaffected and ship as normal from the Marbury Trading Estate unit; only\ncollections and workshop bookings are affected."
+  },
+  {
+    "chunkId": "shipping-and-delivery.md#05",
+    "sourceId": "markdown/shipping-and-delivery.md",
+    "title": "Shipping and delivery",
+    "section": "Large and awkward items",
+    "content": "Complete bikes, framesets and boxed wheelsets ship on a two-person service\nwhere the carrier requires it. This can add a working day and it is quoted at\nthe £11.99 band rather than separately.\n\nWe cannot ship pressurised items — CO2 cartridges, sealed shocks — by air, so\nthose lines are UK and Republic of Ireland only."
+  },
+  {
+    "chunkId": "shipping-and-delivery.md#06",
+    "sourceId": "markdown/shipping-and-delivery.md",
+    "title": "Shipping and delivery",
+    "section": "Missing and delayed parcels",
+    "content": "Tracked services: raise it with us once the tracking has not moved for two\nworking days. Untracked services: we ask customers to wait ten working days\nfrom dispatch before we treat a parcel as lost, because that is the point at\nwhich the carrier will accept a claim.\n\nA parcel marked as delivered but not received is a carrier investigation and\ntakes up to seven working days. We do not send a replacement before the\ninvestigation closes, except on orders under £30, where we replace immediately\nand absorb it."
+  },
+  {
+    "chunkId": "shipping-and-delivery.md#07",
+    "sourceId": "markdown/shipping-and-delivery.md",
+    "title": "Shipping and delivery",
+    "section": "Delivery to a different address",
+    "content": "We ship to any address in the permitted territories. Orders over £400 going to\nan address other than the card's billing address are held for a verification\ncall. That call is made within one working day, and the order does not lose its\nplace in the pick queue while we make it."
+  },
+  {
+    "chunkId": "warranty-policy.md#00",
+    "sourceId": "markdown/warranty-policy.md",
+    "title": "Warranty policy",
+    "section": "Definitions",
+    "content": "These terms are used consistently throughout the rest of the policy, and the\ncategories in section 6 depend on them.\n\n**Component.** Any item sold as a single part or as a boxed set of parts, in the\ncondition it left our supplier. A caliper, a cassette, a wheelset in its factory\npackaging, a frameset in its factory packaging.\n\n**Consumable.** A part designed to wear out in normal use. The list is closed\nand appears in section 4.\n\n**Workshop-built assembly.** Anything the Manchester workshop has assembled,\nlaced, tensioned, bled, faced or aligned before it left us. A wheel laced and\ntensioned by the workshop is a workshop-built assembly, whether or not the rim\nand the hub were bought from Braxby Cycles. A complete bike built to order in\nthe workshop is a workshop-built assembly. A wheelset that arrived boxed from\nthe supplier and was shipped on unopened is not — that is a component.\n\n**Bare frame.** A frame or frameset sold on its own, with or without a fork,\nwith no drivetrain, wheels or contact points fitted.\n\n**Complete bike.** A bicycle sold ready to ride, whether built in the workshop\nor shipped boxed from a supplier."
+  },
+  {
+    "chunkId": "warranty-policy.md#01",
+    "sourceId": "markdown/warranty-policy.md",
+    "title": "Warranty policy",
+    "section": "What is covered",
+    "content": "Braxby Cycles covers manufacturing defects and defects in materials. In\npractice that means a part that fails in normal use without having been\ncrashed, modified, corroded through neglect, or fitted outside the\nmanufacturer's stated limits.\n\nA claim needs three things: the order number, a description of how the part\nfailed, and photographs. The workshop will ask for the part itself in most\ncases, and Customer Operations will send a prepaid label when it does."
+  },
+  {
+    "chunkId": "warranty-policy.md#02",
+    "sourceId": "markdown/warranty-policy.md",
+    "title": "Warranty policy",
+    "section": "What is not covered",
+    "content": "- Damage from a crash, an impact, or a fall.\n- Damage from a fitting error, whether by the customer or by a third-party\n  mechanic. Work carried out in our own workshop is covered by section 7.\n- Corrosion, seizure or wear caused by a lack of maintenance. The maintenance\n  we expect is the schedule in the service intervals document.\n- Cosmetic marks, paint chips, and finish wear that do not affect function.\n- Any part that has been modified, re-drilled, re-faced by a third party, or\n  refinished.\n- Loss of performance that is ordinary wear. A brake pad that is thin, a chain\n  that has stretched, or a tyre that has worn through its tread indicator is a\n  consumable at end of life, not a defect."
+  },
+  {
+    "chunkId": "warranty-policy.md#03",
+    "sourceId": "markdown/warranty-policy.md",
+    "title": "Warranty policy",
+    "section": "Consumables",
+    "content": "The following are consumables and carry no warranty term beyond the point of\ndelivery, other than for a defect present when the part arrived:\n\nbrake pads; brake and gear cables and their outers; tyres; inner tubes;\ntubeless sealant; chains; cassettes; chainrings; jockey wheels; bar tape;\ngrips; saddle covers; bearings and bearing seals; bottom bracket cups;\ndisc rotors once bedded in.\n\nA consumable that arrives visibly damaged or fails on its first ride is handled\nunder the returns policy, not under this one, and the customer should not wait\nfor a warranty decision before saying so."
+  },
+  {
+    "chunkId": "warranty-policy.md#04",
+    "sourceId": "markdown/warranty-policy.md",
+    "title": "Warranty policy",
+    "section": "Crash replacement",
+    "content": "Crash replacement is a discretionary scheme, separate from warranty, and it\nexists because a frame that has been crashed is not a defective frame.\n\n**Bare frames purchased from Braxby Cycles are covered by the crash-replacement\nscheme.** A customer who crashes a bare frame bought from us within thirty-six\nmonths of the order date can buy a replacement frame of the same model, or the\nnearest current equivalent, at forty per cent off the published price.\n\n**Frames supplied as part of a complete bike are not covered by the\ncrash-replacement scheme.** The frame in a complete bike is not sold as a\nseparate line, so there is no frame order to date the scheme from, and the\ndiscount is not offered. This has caught customers out and it is worth saying\nplainly at the point of sale.\n\nThe scheme is discretionary. The workshop inspects the damage, confirms it is\nconsistent with an impact rather than with a defect, and Customer Operations\napproves or declines. A declined crash-replacement request does not prevent a\nwarranty claim on the same frame if the workshop's inspection suggests one."
+  },
+  {
+    "chunkId": "warranty-policy.md#05",
+    "sourceId": "markdown/warranty-policy.md",
+    "title": "Warranty policy",
+    "section": "Term by category",
+    "content": "The term runs from the date the order was delivered, not from the date it was\nplaced, and not from the date the customer first rode it.\n\n| Category | Term | Notes |\n|---|---|---|\n| Components | 24 months | The default. Everything not named below. |\n| Wickhaven frames and rigid forks | 60 months | Original purchaser only, non-transferable. |\n| Workshop-built assemblies | 36 months | Covers the build itself: spoke tension, bearing preload, hose routing, facing and alignment. |\n| Electronics and lighting | 24 months | Batteries are covered against defect, not against capacity loss. |\n| Consumables | none | See section 4. |\n| Trade account orders | 12 months | Trade terms override this table; see the trade account terms. |\n\nA workshop-built assembly that fails because of a defective component is\nhandled as a component claim, on the component's term. The two terms sit\nalongside each other and the customer gets the benefit of whichever is longer."
+  },
+  {
+    "chunkId": "warranty-policy.md#06",
+    "sourceId": "markdown/warranty-policy.md",
+    "title": "Warranty policy",
+    "section": "Work carried out in our workshop",
+    "content": "Labour carried out by the Manchester workshop is guaranteed for twelve months.\nIf a bleed will not hold, a wheel goes out of true under normal use, or a\nbearing preload backs off, bring it back and we redo the work at no charge.\n\nThere is one exception, and it is absolute: **where the customer supplied the\npart, the labour guarantee does not apply.** The workshop cannot stand behind a\nbuild using a component it did not sell and cannot inspect the provenance of.\nThe workshop service terms set out which customer-supplied parts we will fit at\nall."
+  },
+  {
+    "chunkId": "warranty-policy.md#07",
+    "sourceId": "markdown/warranty-policy.md",
+    "title": "Warranty policy",
+    "section": "Making a claim",
+    "content": "1. Email `support@braxbycycles.example` with the order number and photographs.\n2. Customer Operations acknowledges within one working day and either resolves\n   it or raises a workshop inspection.\n3. Where the part is needed, a prepaid label is issued and the part is sent to\n   the returns unit at Marbury Trading Estate, Manchester.\n4. A decision is issued within ten working days of the part arriving.\n5. An approved claim is settled by replacement where we hold stock, by credit\n   where we do not, and by refund where neither is possible.\n\nWe do not charge an inspection fee, and we do not charge return carriage on a\nclaim that is approved. A claim that is declined and where the customer wants\nthe part back is returned at our cost once; after that we hold the part for\nsixty days and then dispose of it."
+  },
+  {
+    "chunkId": "workshop-service-bulletins-2026.md#00",
+    "sourceId": "markdown/workshop-service-bulletins-2026.md",
+    "title": "Workshop service bulletins, 2026",
+    "section": "2026-01 — Torque wrench calibration",
+    "content": "All torque wrenches on the bench are now sent for calibration every six months\nrather than annually. Two wrenches were found out of tolerance during the\nDecember audit, both reading low, which is the direction that produces\nunder-torqued stem bolts and a customer who comes back.\n\nCalibration stickers carry the due date. A wrench past its date does not get\nused, and there is no judgement call available here.\n\n---"
+  },
+  {
+    "chunkId": "workshop-service-bulletins-2026.md#01",
+    "sourceId": "markdown/workshop-service-bulletins-2026.md",
+    "title": "Workshop service bulletins, 2026",
+    "section": "2026-02 — Tubeless setup on hookless rims",
+    "content": "Hookless rims have a hard pressure ceiling and a narrow list of approved tyres.\nDo not set up a tubeless tyre on a hookless rim unless the tyre is on the rim\nmanufacturer's approved list, and do not exceed the rim's stated maximum\npressure even if the tyre is rated higher.\n\nIf the customer insists on a tyre that is not on the list, decline the job and\nexplain why. Record the refusal on the job sheet.\n\n---"
+  },
+  {
+    "chunkId": "workshop-service-bulletins-2026.md#02",
+    "sourceId": "markdown/workshop-service-bulletins-2026.md",
+    "title": "Workshop service bulletins, 2026",
+    "section": "2026-03 — Bleed procedure, wet-weather bikes",
+    "content": "The service intervals document now calls for a six-month bleed on bikes used\nfor wet-weather commuting. Workshop staff should ask the question at booking —\n\"is this a year-round bike?\" — and set the next-service reminder accordingly\nrather than defaulting to twelve months.\n\nThe reminder is set in the job system at the point the job is closed, not at\nthe point it is booked.\n\n---"
+  },
+  {
+    "chunkId": "workshop-service-bulletins-2026.md#03",
+    "sourceId": "markdown/workshop-service-bulletins-2026.md",
+    "title": "Workshop service bulletins, 2026",
+    "section": "2026-04 — Rear caliper mount adapters, Halvard R4",
+    "content": "A recurring error on the bench: fitting a 160 mm rear rotor to a frame with a\npost mount designed for 180 mm, and then reaching for a generic adapter to make\nup the difference.\n\nUse the correct adapter. For a Halvard R4 rear caliper going from a 160 mm\nmount to a 180 mm rotor, the part is **BRK-1180**. It is the only rear adapter\nwe stock that has the correct offset for the R4 caliper body, and it ships with\nthe two longer bolts the conversion needs. A generic post-mount adapter will\nbolt up and will hold the caliper a millimetre out of plane, which is why those\nbikes come back with a rub the customer can hear and the mechanic cannot find.\n\nFront conversions use ADP-3308 and are unaffected.\n\nIf the part is out of stock, the job waits. Do not substitute.\n\n---"
+  },
+  {
+    "chunkId": "workshop-service-bulletins-2026.md#04",
+    "sourceId": "markdown/workshop-service-bulletins-2026.md",
+    "title": "Workshop service bulletins, 2026",
+    "section": "2026-05 — Chain wear gauges",
+    "content": "The 0.5% gauges have replaced the 0.75% gauges on all three benches. Eleven-\nand twelve-speed chains are replaced at 0.5% elongation, and a chain that\npasses the old gauge has usually already started on the cassette.\n\nOld gauges have been removed from the workshop. If you find one in a toolbox,\nbin it.\n\n---"
+  },
+  {
+    "chunkId": "workshop-service-bulletins-2026.md#05",
+    "sourceId": "markdown/workshop-service-bulletins-2026.md",
+    "title": "Workshop service bulletins, 2026",
+    "section": "2026-06 — Customer-supplied braking components",
+    "content": "A reminder rather than a change. The workshop service terms are clear that we\ndo not fit customer-supplied braking components of any kind, and that includes\npads that a customer has bought from us previously and brought back on a\ndifferent bike.\n\nThree jobs were accepted against this rule in the first quarter. All three were\ncompleted and none of them caused a problem, which is exactly why the rule\nneeds restating: nothing going wrong is not evidence that the rule was wrong.\n\n---"
+  },
+  {
+    "chunkId": "workshop-service-bulletins-2026.md#06",
+    "sourceId": "markdown/workshop-service-bulletins-2026.md",
+    "title": "Workshop service bulletins, 2026",
+    "section": "2026-07 — Stock-taking closure",
+    "content": "The workshop closes on 14 August for stock-taking, as it does every year. No\nbookings are taken for that day. Bikes already in the workshop are secured and\nnot worked on. Online orders are unaffected and ship as normal from the goods-\nin unit.\n\nAny job scheduled for the closure day is moved to the following working day,\nand the customer is called rather than emailed."
+  },
+  {
+    "chunkId": "workshop-service-terms.md#00",
+    "sourceId": "markdown/workshop-service-terms.md",
+    "title": "Workshop service terms",
+    "section": "Booking",
+    "content": "Book online at `www.braxbycycles.example/workshop` or at the counter. We hold\nslots for two working days after a booking is made and release them if the bike\nhas not arrived.\n\nBikes are booked in by the half day. A bike dropped off without a booking goes\ninto the queue behind everything already booked, and in season that can be two\nweeks."
+  },
+  {
+    "chunkId": "workshop-service-terms.md#01",
+    "sourceId": "markdown/workshop-service-terms.md",
+    "title": "Workshop service terms",
+    "section": "Customer-supplied parts",
+    "content": "This is the section customers argue with most, so it is stated as two rules\nwith no exceptions between them.\n\n**The workshop will fit customer-supplied tyres, inner tubes, saddles,\nseatposts, bar tape, pedals and bottle cages.** These are parts where a fitting\nerror is visible immediately, where the part cannot fail in a way that hurts\nsomebody a week later, and where we can inspect the part on the bench and see\nwhat we are dealing with.\n\n**The workshop will not fit customer-supplied disc brake pads, hydraulic hoses,\ncalipers, levers, rotors or any other braking component.** We have no way to\nverify the compound, the backing plate, the hose fitting standard or the\nprovenance, and a brake that fails is not a brake that fails visibly. This is\nnot negotiable and the counter staff are told to decline it politely and\nwithout discussion.\n\nCustomer-supplied drivetrain parts, wheels and frames are at the workshop\nmanager's discretion, decided on the bench, and declined without argument if\nthe part looks wrong for the bike.\n\nWhere the customer supplied the part, the labour guarantee in the warranty\npolicy does not apply. We will still put right our own mistake, but we will not\ncarry the risk of a part we did not sell."
+  },
+  {
+    "chunkId": "workshop-service-terms.md#02",
+    "sourceId": "markdown/workshop-service-terms.md",
+    "title": "Workshop service terms",
+    "section": "Quotations and authorisation",
+    "content": "Every job gets a written quotation before work starts. If the work turns out to\nneed more than the quotation, we stop and call. We will not exceed a quotation\nby more than £20 without speaking to the customer first, and we will not\nproceed at all on a job where the extra work changes what the bike is for.\n\nA customer who cannot be reached gets the bike back in the state it was in,\nwith the diagnostic time charged at the standard labour rate and nothing else."
+  },
+  {
+    "chunkId": "workshop-service-terms.md#03",
+    "sourceId": "markdown/workshop-service-terms.md",
+    "title": "Workshop service terms",
+    "section": "Collection and storage",
+    "content": "Bikes are stored free for fourteen days after the completion call. After\nfourteen days we charge storage per day. After ninety days, and after three\nrecorded attempts to contact the customer, we treat the bike as abandoned and\ndispose of it under the Torts (Interference with Goods) Act. We have done this\ntwice in eleven years and would rather never do it again."
+  },
+  {
+    "chunkId": "workshop-service-terms.md#04",
+    "sourceId": "markdown/workshop-service-terms.md",
+    "title": "Workshop service terms",
+    "section": "Work we do not do",
+    "content": "- We do not repair carbon frames or carbon components. We inspect them, and we\n  refer them to a specialist repairer.\n- We do not service internal-gear hubs beyond removing and refitting the wheel.\n- We do not service electronic drivetrains beyond firmware updates, battery\n  replacement and cable routing.\n- We do not build wheels with customer-supplied second-hand spokes.\n- We do not paint, respray or refinish."
+  },
+  {
+    "chunkId": "workshop-service-terms.md#05",
+    "sourceId": "markdown/workshop-service-terms.md",
+    "title": "Workshop service terms",
+    "section": "Bikes we will refuse",
+    "content": "The workshop will decline a bike that is unsafe to work on: a cracked frame, a\nseized steerer, a frame that has been repaired by an unknown party, or a bike\nthat arrives in a condition where the mechanic cannot get to the fasteners\nwithout unreasonable cleaning. We will say so at the counter, we will explain\nwhy, and we will not charge for looking."
+  },
+  {
+    "chunkId": "workshop-service-terms.md#06",
+    "sourceId": "markdown/workshop-service-terms.md",
+    "title": "Workshop service terms",
+    "section": "Warranty on workshop labour",
+    "content": "Twelve months, as set out in the warranty policy. Bring it back and we redo it.\nThe exception for customer-supplied parts, above, is the only exception."
+  }
+]

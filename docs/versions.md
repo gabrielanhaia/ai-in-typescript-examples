@@ -29,7 +29,7 @@ Both book directories pin these, at the same versions.
 | `tsx` | `4.23.1` | Runs the `.ts` listings directly, so no build step stands between a reader and an example. Loaded with `node --import tsx`. | 2026-07-25 | `ai-that-answers` |
 | `vitest` | `4.1.10` | The unit tests. `npm run verify` runs them and they never touch the network; the one test that calls the model is in `npm run test:live`. | 2026-07-25 | `ai-that-answers`, `ai-that-reads` |
 
-Where the "Used by" column above says only `ai-that-answers`, Book 2 either does not use the package (`hono`, `@hono/node-server`) or pins the identical version for the same reason (`langchain`, `@langchain/anthropic`, `@langchain/core`, `@anthropic-ai/sdk`, `zod`, `typescript`, `@types/node`, `tsx`).
+Where the "Used by" column above says only `ai-that-answers`, Books 2 and 3 either do not use the package or pin the identical version for the same reason. Book 3 pins every row in that table, at those versions, including `hono` and `@hono/node-server` — which Book 2 does not use at all and which Book 3 needs because it ships a sample HTTP service for its tools to call.
 
 `@anthropic-ai/sdk` is worth one extra sentence in Book 2: it arrives from Book 1, but chapter 10's `budget.ts` imports it directly for `messages.countTokens`, so it has to be a top-level dependency here too, at the same `0.115.0` that `@langchain/anthropic@1.5.2` resolves to. **Chapter 10 names it in an install line** for exactly that reason — it used to be the one import in Book 2 with no install line anywhere behind it. `npm ls @anthropic-ai/sdk` shows one copy, deduped.
 
@@ -98,7 +98,53 @@ npm warn deprecated whatwg-encoding@3.1.1: Use @exodus/bytes instead …
 
 The chain is `cheerio@1.2.0` → `encoding-sniffer@0.2.1` → `whatwg-encoding@3.1.1`. `cheerio@1.2.0` **is** the latest release and it still declares `encoding-sniffer: ^0.2.1`; `encoding-sniffer@1.0.2` is the version that swapped to `@exodus/bytes`, and forcing it through an `overrides` entry would violate cheerio's own declared range on an unverified major bump — in a loader whose failures arrive as text rather than as errors. Left alone, deliberately, and recorded here with a date instead. Re-check when cheerio next moves.
 
-No package pinned in this repository is deprecated, and `npm ls` shows no second copy of anything either directory pins.
+No package pinned in this repository is deprecated. `npm ls` shows no second copy of anything `ai-that-answers` or `ai-that-reads` pins; the one duplicate in the repository is in `ai-that-acts` and is documented in the next section.
+
+## Pinned versions — Book 3, *AI That Acts*
+
+Tool calling adds one dependency the previous books did not have — the Model Context Protocol SDK — and takes two back that Book 2 did not use. Everything below was installed and run on 2026-07-26 with `npm ci && npm run typecheck && npm run verify`, plus every listing in the book that does not need a key.
+
+| Package | Pinned | Why | Last verified | Chapter |
+|---|---|---|---|---|
+| `@modelcontextprotocol/sdk` | `1.29.0` | The client and the server in chapter 11. **The fastest-moving pin in this repository.** The revision it negotiates is `2025-11-25`, and that value is read from the installed package's own `LATEST_PROTOCOL_VERSION` rather than from a documentation page, because the two can disagree and the constant is the one your client actually sends. `ch11/round-trip.ts` prints it, along with the four older revisions the SDK still speaks. Note also that `server.tool()` is deprecated at this version in favour of `registerTool`, with a different argument order — which is how you recognise older examples. | 2026-07-26 | 11 |
+| `hono` | `4.12.32` | The sample Braxby service. Same pin as Book 1, where it was the chatbot's HTTP layer; here it is the API the tools call, which is what makes chapter 6's `fetch` reach something you can read the handler for. | 2026-07-26 | 6, 7 |
+| `@hono/node-server` | `2.0.11` | Hono has no Node listener of its own. **This is the one package in the repository that legitimately resolves twice** — see below. | 2026-07-26 | 6, 7 |
+
+Everything else is the shared table above, at the same versions: `langchain` 1.5.4, `@langchain/anthropic` 1.5.2, `@langchain/core` 1.2.3, `@anthropic-ai/sdk` 0.115.0, `zod` 4.4.3, `typescript` 7.0.2, `@types/node` 24.13.3, `tsx` 4.23.1, `vitest` 4.1.10.
+
+**`@anthropic-ai/sdk` is top-level here for a stronger reason than in either previous book.** Chapters 2 through 9 call it directly, because the whole point of those chapters is the wire shape underneath the framework: the `tool_use` block, the `tool_result` block, the id that pairs them, and `stop_reason`. It resolves to a single copy, deduped under `@langchain/anthropic@1.5.2`, which depends on the same line.
+
+**`@langchain/langgraph` is deliberately absent**, and that absence is a rung boundary rather than an oversight. Chapter 10 names `humanInTheLoopMiddleware`, shows its configuration, and does not build on it: an agent carrying it and nothing else throws `GraphValueError: No checkpointer set` on the first gated call, and the in-memory checkpointer that satisfies it is exported from `@langchain/langgraph`. Durable state is Book 4. The framework pulls the package in transitively, so it is in `node_modules` and it is not a line anybody maintains here.
+
+### The duplicate, stated rather than hidden
+
+Run `npm ls` in `ai-that-acts` and `@hono/node-server` appears twice:
+
+```text
+├── @hono/node-server@2.0.11
+    └── @hono/node-server@1.19.15   (under @modelcontextprotocol/sdk)
+```
+
+`@modelcontextprotocol/sdk@1.29.0` declares a caret range on the 1.x line, which cannot reach a 2.x release. Both copies are correct, neither is a mistake, nothing breaks, and the two are used by different things — the app serves on 2.0.11, the MCP SDK's own HTTP transport uses 1.19.15, and chapter 11's listings use stdio and touch neither.
+
+**It is not fixed with an `overrides` entry**, for the same reason Book 2 left `whatwg-encoding` alone: forcing a major bump across somebody else's declared range, to make a cosmetic line disappear, trades a documented duplicate for an unverified upgrade. Chapter 14 asks the reader to run the same command and read the answer honestly, and this is what honest looks like.
+
+Single-copy **does** hold, and was checked, for `@anthropic-ai/sdk`, `zod`, `hono` and `@langchain/core`. `npm ci` prints no deprecation warning.
+
+### The sample application
+
+| Component | Pinned | Why | Last verified |
+|---|---|---|---|
+| Braxby service | `hono` + `@hono/node-server`, in `ai-that-acts/app` | A book about tool calling needs something for the tools to call. Every write in Book 3 lands here and nowhere else. | 2026-07-26 |
+| Its database | **`node:sqlite`**, built into Node 24 | No dependency, no second container, no account, and no licence key between a reader and chapter 6. The `refunds_by_key` unique index is the line chapter 7 turns on, and it is a real index rather than a `Map` in the process. | 2026-07-26 |
+| `retrieval/` | Book 2's interface, lexical implementation | Book 2's pipeline shipped as a fixture: `retrieve(query, k)` over a committed 50-chunk index built from seven of Book 2's own corpus documents. A Book-3-only reader gets a working search with no pgvector and no reranking vendor. Point the import at your own retriever and delete it if you finished Book 2. | 2026-07-26 |
+
+### Model
+
+| | Pinned | Why | Last verified |
+|---|---|---|---|
+| Every listing | `claude-sonnet-5` | Inherited from Book 2, which inherited it from Book 1's closing chapter. **Rejects a non-default `temperature`, `top_p` or `top_k` with a 400, and the SDK type-defines all three anyway** — so `ch14/no-sampling.test.ts` greps this repository's own source and fails the build. That test is in `npm run verify`. `max_tokens` is `8192` everywhere, because Sonnet 5 runs adaptive thinking by default and the cap covers the thinking and the answer together. | 2026-07-26 |
+| The cheap path while iterating | `claude-haiku-4-5` | Chapter 13 names it for the twenty repeat runs you will do while tuning a tool description. No listing here runs on it by default. | 2026-07-26 |
 
 ## Runtime
 
@@ -132,5 +178,6 @@ That second job is the early-warning system for framework churn. When it fires: 
 
 Changes to a pin go here, newest first — date, what moved, from what to what, and why.
 
+- **2026-07-26 — Book 3's set, *AI That Acts*.** One new package, `@modelcontextprotocol/sdk@1.29.0`, plus `hono` and `@hono/node-server` returning at Book 1's versions for the sample service the tools call. Verified by installing the tree and running `npm ci && npm run typecheck && npm run verify` on it — 110 source files at zero errors, four test files and seven tests, keyless — plus every listing that does not need a key, and chapter 11's client-and-server pair over stdio. Three things are recorded rather than papered over. `@hono/node-server` **resolves twice** and stays that way, because the MCP SDK's caret on the 1.x line cannot reach 2.0.11 and an `overrides` entry would force an unverified major bump on somebody else's declared range. `@langchain/langgraph` is **absent on purpose**: chapter 10 names the middleware that needs a checkpointer, shows what it throws without one, and does not build on it. And the sample application's database is **`node:sqlite`**, built into Node 24, so the unique index chapter 7 depends on is a real index and costs no dependency.
 - **2026-07-25 — Book 2's set, *AI That Reads*.** Thirteen new packages and two container images, all verified by installing the tree, starting both containers, and running `npm ci && npm run typecheck && npm run verify` plus every chapter that does not need a key. Four of them were arrived at the hard way. `@langchain/community` is **absent, not forgotten** — it was deprecated wholesale on 2026-05-27 and every loader Book 2 would have taken from it is now the underlying library called directly. `cohere-ai` is **deliberately not pinned**, because `@langchain/cohere` brings its own copy and a top-level pin resolves a second one. `@langchain/pgvector` is a `0.1.0` and that is stated rather than glossed. And `@anthropic-ai/sdk` is a top-level dependency here too, at the same `0.115.0`, because chapter 10's `budget.ts` imports it directly — which is why chapter 10 now carries the install line for it. One transitive deprecation warning survives, through `cheerio@1.2.0`, and is recorded above rather than papered over with an `overrides` entry.
 - **2026-07-25 — first published set.** Every pin above landed with *AI That Answers*, verified by installing the tree and running `npm ci && npm run typecheck && npm run verify` on it. Two of them were arrived at the hard way and are worth restating: `@langchain/anthropic` is `1.5.2` rather than `1.5.1` because `1.5.1` produces a duplicated `@anthropic-ai/sdk`, and `@types/node` is `24.13.3` rather than `latest` because `latest` is Node 26 typings against a Node 24 runtime.

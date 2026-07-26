@@ -1,0 +1,37 @@
+{
+  "name": "ai-that-acts",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Runnable code listings from AI That Acts (Book 3 of AI in TypeScript).",
+  "license": "MIT",
+  "engines": {
+    "node": ">=24.18.0"
+  },
+  "scripts": {
+    "run-example": "node --env-file-if-exists=../.env --env-file-if-exists=.env --import tsx scripts/run.ts",
+    "app": "node --env-file-if-exists=../.env --env-file-if-exists=.env --import tsx app/server.ts",
+    "app:seed": "node --env-file-if-exists=../.env --env-file-if-exists=.env --import tsx app/seed.ts",
+    "retrieval:build": "node --import tsx retrieval/build-index.ts",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:live": "vitest run --config vitest.live.config.ts",
+    "verify": "npm run typecheck && npm run test"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "0.115.0",
+    "@hono/node-server": "2.0.11",
+    "@langchain/anthropic": "1.5.2",
+    "@langchain/core": "1.2.3",
+    "@modelcontextprotocol/sdk": "1.29.0",
+    "hono": "4.12.32",
+    "langchain": "1.5.4",
+    "zod": "4.4.3"
+  },
+  "devDependencies": {
+    "@types/node": "24.13.3",
+    "tsx": "4.23.1",
+    "typescript": "7.0.2",
+    "vitest": "4.1.10"
+  }
+}

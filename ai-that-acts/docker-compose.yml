@@ -1,0 +1,30 @@
+# The sample application the tools in this book call.
+#
+#   docker compose up -d
+#
+# One service, and its database is the SQLite file on the named volume below —
+# Node 24 has a SQLite driver built in, so there is no second container, no
+# account, and no licence key between a reader and chapter 6.
+#
+# It binds to localhost only, it holds nothing but invented Braxby data, and
+# every write in this book lands in it and nowhere else.
+
+services:
+  braxby:
+    build:
+      context: .
+    container_name: braxby-service
+    environment:
+      BRAXBY_DB: /data/braxby.sqlite
+    ports:
+      - "127.0.0.1:8788:8788"
+    volumes:
+      - braxbydata:/data
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:8788/health').then(r=>process.exit(r.ok?0:1),()=>process.exit(1))"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+volumes:
+  braxbydata:
