@@ -1,0 +1,36 @@
+# The one store AI That Plans needs, from chapter 6 onward.
+#
+#   docker compose up -d
+#
+# No account, no licence key, no signup — every listing this book prints has
+# to run for a reader who has just cloned the repository. Binds to localhost
+# only.
+#
+# Chapters 1 to 5 do not need this at all: the checkpointer is in memory or in
+# a local SQLite file, deliberately, so that nothing between a node and its
+# state can be the thing that went wrong.
+
+services:
+  postgres:
+    image: postgres:18.4-bookworm
+    container_name: atp-postgres
+    environment:
+      POSTGRES_USER: braxby
+      POSTGRES_PASSWORD: braxby
+      POSTGRES_DB: braxby
+    ports:
+      - "127.0.0.1:5432:5432"
+    volumes:
+      # Mounted at /var/lib/postgresql, NOT .../data. The PG18 images moved the
+      # data directory under a versioned subdirectory, so a volume mounted at
+      # the old path makes initdb refuse to start with "directory exists but is
+      # not empty". This series shipped that bug once already, in Book 2.
+      - pgdata:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U braxby -d braxby"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+volumes:
+  pgdata:
