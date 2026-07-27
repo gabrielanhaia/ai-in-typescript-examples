@@ -19,7 +19,11 @@ services:
       POSTGRES_PASSWORD: braxby
       POSTGRES_DB: braxby
     ports:
-      - "127.0.0.1:5432:5432"
+      # 5433, not 5432, and deliberately. Book 2 (ai-that-reads) publishes its
+      # own Postgres on 5432, so a reader who still has that stack up would meet
+      # "port is already allocated" as their first experience of this chapter.
+      # The books are standalone; their containers should not fight.
+      - "127.0.0.1:5433:5432"
     volumes:
       # Mounted at /var/lib/postgresql, NOT .../data. The PG18 images moved the
       # data directory under a versioned subdirectory, so a volume mounted at
