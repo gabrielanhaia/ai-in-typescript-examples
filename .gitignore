@@ -17,6 +17,11 @@ data/
 *.sqlite
 *.sqlite3
 *.db
+# SQLite's write-ahead-log sidecars. Book 4's checkpointer runs in WAL mode, so
+# every run of ch05 leaves these two beside the .sqlite file — and `*.sqlite`
+# does not match them, because the suffix comes after the extension.
+*.sqlite-wal
+*.sqlite-shm
 # Book 2's on-disk embedding cache, written by ch06/file-cache.ts. One file per
 # vector key, and the whole point of it is that it is cheap to delete.
 .vectors/
