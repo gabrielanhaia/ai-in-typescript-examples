@@ -1,0 +1,22 @@
+# ch06/compose.yaml
+services:
+  postgres:
+    image: postgres:18
+    environment:
+      POSTGRES_USER: braxby
+      POSTGRES_DB: braxby
+      # This machine only. Anything reachable from anywhere else
+      # takes a password from the environment instead.
+      POSTGRES_HOST_AUTH_METHOD: trust
+    ports:
+      - "5432:5432"
+    # One mount, one level above the data directory. See below.
+    volumes:
+      - braxby-checkpoints:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U braxby -d braxby"]
+      interval: 5s
+      retries: 10
+
+volumes:
+  braxby-checkpoints:

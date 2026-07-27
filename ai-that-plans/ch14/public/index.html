@@ -1,0 +1,68 @@
+<!-- NOT A LISTING FROM CHAPTER 14. -->
+<!-- Chapter 9's ch09/public/index.html, plus the two things a gate adds: a
+     listener for the `paused` frame the hub sends when getState finds an open
+     interrupt, and two buttons that POST a Decision to /decide. No build step,
+     no framework, no bundler — the same thirty lines chapter 9 printed. -->
+<h1>Braxby workshop</h1>
+<form id="ask"><input id="q" size="50" /><button>Send</button></form>
+<ul id="log"></ul>
+<div id="gate" hidden>
+  <p id="proposal"></p>
+  <button id="approve">Approve</button>
+  <button id="reject">Reject</button>
+</div>
+<script>
+  const log = document.getElementById("log");
+  const gate = document.getElementById("gate");
+  const line = (text) => {
+    const li = document.createElement("li");
+    li.textContent = text;
+    log.append(li);
+  };
+
+  let thread = null;
+
+  const answer = (decision) => {
+    gate.hidden = true;
+    fetch("/decide?thread=" + thread, {
+      method: "POST",
+      body: JSON.stringify(decision),
+    });
+  };
+
+  document.getElementById("approve").onclick = () =>
+    answer({ type: "approve" });
+  document.getElementById("reject").onclick = () =>
+    answer({ type: "reject", reason: "Customer wants a quote first." });
+
+  document.getElementById("ask").onsubmit = async (e) => {
+    e.preventDefault();
+    const q = encodeURIComponent(document.getElementById("q").value);
+    const started = await fetch("/runs?q=" + q, { method: "POST" });
+    thread = (await started.json()).thread;
+    const src = new EventSource("/events?thread=" + thread);
+
+    src.addEventListener("snapshot", (m) =>
+      line("at step " + JSON.parse(m.data).cursor));
+    // subgraphs: true, so every frame carries the namespace of the
+    // graph that produced it. Empty is the parent; anything else is
+    // the specialist, and the UI indents it.
+    src.addEventListener("updates", (m) => {
+      const { ns, data } = JSON.parse(m.data);
+      const where = ns.length ? "  parts  " : "";
+      line(where + Object.keys(data).join(", "));
+    });
+    src.addEventListener("custom", (m) =>
+      line("  " + JSON.stringify(JSON.parse(m.data).data)));
+    src.addEventListener("paused", (m) => {
+      const proposal = JSON.parse(m.data);
+      document.getElementById("proposal").textContent = proposal.summary;
+      gate.hidden = false;
+      line("paused  " + proposal.summary);
+      // Not closed: the answer's run streams over this same
+      // connection, which is the whole point of a hub.
+    });
+    src.addEventListener("failed", () => src.close());
+    src.addEventListener("end", () => src.close());
+  };
+</script>

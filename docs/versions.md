@@ -29,7 +29,7 @@ Both book directories pin these, at the same versions.
 | `tsx` | `4.23.1` | Runs the `.ts` listings directly, so no build step stands between a reader and an example. Loaded with `node --import tsx`. | 2026-07-25 | `ai-that-answers` |
 | `vitest` | `4.1.10` | The unit tests. `npm run verify` runs them and they never touch the network; the one test that calls the model is in `npm run test:live`. | 2026-07-25 | `ai-that-answers`, `ai-that-reads` |
 
-Where the "Used by" column above says only `ai-that-answers`, Books 2 and 3 either do not use the package or pin the identical version for the same reason. Book 3 pins every row in that table, at those versions, including `hono` and `@hono/node-server` — which Book 2 does not use at all and which Book 3 needs because it ships a sample HTTP service for its tools to call.
+Where the "Used by" column above says only `ai-that-answers`, Books 2, 3 and 4 either do not use the package or pin the identical version for the same reason. Books 3 and 4 pin **every** row in that table, at those versions, including `hono` and `@hono/node-server` — which Book 2 does not use at all, which Book 3 needs because it ships a sample HTTP service for its tools to call, and which Book 4 needs because chapters 9 and 14 stream graph state to a browser over SSE.
 
 `@anthropic-ai/sdk` is worth one extra sentence in Book 2: it arrives from Book 1, but chapter 10's `budget.ts` imports it directly for `messages.countTokens`, so it has to be a top-level dependency here too, at the same `0.115.0` that `@langchain/anthropic@1.5.2` resolves to. **Chapter 10 names it in an install line** for exactly that reason — it used to be the one import in Book 2 with no install line anywhere behind it. `npm ls @anthropic-ai/sdk` shows one copy, deduped.
 
@@ -146,6 +146,63 @@ Single-copy **does** hold, and was checked, for `@anthropic-ai/sdk`, `zod`, `hon
 | Every listing | `claude-sonnet-5` | Inherited from Book 2, which inherited it from Book 1's closing chapter. **Rejects a non-default `temperature`, `top_p` or `top_k` with a 400, and the SDK type-defines all three anyway** — so `ch14/no-sampling.test.ts` greps this repository's own source and fails the build. That test is in `npm run verify`. `max_tokens` is `8192` everywhere, because Sonnet 5 runs adaptive thinking by default and the cap covers the thinking and the answer together. | 2026-07-26 |
 | The cheap path while iterating | `claude-haiku-4-5` | Chapter 13 names it for the twenty repeat runs you will do while tuning a tool description. No listing here runs on it by default. | 2026-07-26 |
 
+## Pinned versions — Book 4, *AI That Plans*
+
+Durable state adds one framework and its four satellites, and takes back the two packages Book 3 used for its sample service. Everything below was installed and run on 2026-07-28 with `npm ci && npm run verify` on Node 24.18.0, plus every listing in the book that does not need a key, plus the Postgres listings against a real 18.4 container.
+
+| Package | Pinned | Why | Last verified | Chapter |
+|---|---|---|---|---|
+| `@langchain/langgraph` | `1.4.8` | The subject of the book. **Absent from Book 3 on purpose** — chapter 10 there names the middleware that needs a checkpointer and stops — so this is the pin that makes Book 4 a book. Peer is `@langchain/core ^1.1.48` and `zod ^3.25.32 \|\| ^4.2.0`; the shared `1.2.3` and `4.4.3` both satisfy it. | 2026-07-28 | 2–14 |
+| `@langchain/langgraph-checkpoint` | `1.1.3` | The `BaseCheckpointSaver` abstract class, imported **directly** by ch. 5's `measured.ts` because a wrapper has to extend the abstract five-method surface rather than a concrete saver. Both savers below declare it as a *peer*, so it is a top-level pin here rather than something that arrives on its own. | 2026-07-28 | 5, 6 |
+| `@langchain/langgraph-checkpoint-sqlite` | `1.0.3` | The store for chapters 5, 8, 10 and 13, and the reason those chapters run with no container at all. Depends on `better-sqlite3 ^12.10.0` — see the pin that is deliberately absent, below. | 2026-07-28 | 5, 8, 10, 13 |
+| `@langchain/langgraph-checkpoint-postgres` | `1.0.4` | The store from chapter 6 onward. **`PostgresStore` is behind a subpath export** — `@langchain/langgraph-checkpoint-postgres/store`, not the package root — which is one import line and half an hour if you do not know it. Its `defaultTtl` is **in minutes**. Neither object creates a table until you call `setup()`, and that is the chapter's argument, not an oversight. | 2026-07-28 | 6, 7, 14 |
+| `@langchain/langgraph-supervisor` | `1.1.1` | `createSupervisor`, chapter 11's first topology. Returns an **uncompiled builder**, so the checkpointer goes on in `compile()` rather than in the factory. Peer is `@langchain/langgraph ^1.3.1-rc.0`, which `1.4.8` satisfies. | 2026-07-28 | 11, 12, 14 |
+| `@langchain/langgraph-swarm` | `1.0.2` | `createSwarm` and, more importantly, **`createHandoffTool`** — chapter 11's handoff tools come from this package and not from the supervisor's, which is the single easiest import in the chapter to get wrong. `0.x`-adjacent at `1.0.2`; read the changelog before bumping. | 2026-07-28 | 11 |
+| `pg` | `8.22.0` | The driver under the Postgres saver, which declares it as a dependency at `^8.12.0` and gets this one deduped. Top-level here because ch. 6 builds the pool itself — the library's own default is ten connections and an unbounded wait, and the chapter sizes it on purpose. Same pin as Book 2. | 2026-07-28 | 6, 14 |
+| `@types/pg` | `8.20.0` | `pg` ships no type declarations. Same pin as Book 2. | 2026-07-28 | 6 |
+| `hono` + `@hono/node-server` | `4.12.32` + `2.0.11` | Chapter 9's SSE server and chapter 14's. Same pins as Books 1 and 3, and here there is no MCP SDK to drag a second copy of the listener in, so **both resolve exactly once**. | 2026-07-28 | 9, 14 |
+
+Everything else is the shared table above, at the same versions: `langchain` 1.5.4, `@langchain/anthropic` 1.5.2, `@langchain/core` 1.2.3, `@anthropic-ai/sdk` 0.115.0, `zod` 4.4.3, `typescript` 7.0.2, `@types/node` 24.13.3, `tsx` 4.23.1, `vitest` 4.1.10.
+
+`npm ls` shows one copy of `@anthropic-ai/sdk`, `@langchain/core`, `@langchain/langgraph-checkpoint`, `zod`, `pg`, `hono` and `@hono/node-server`. Book 3's `@hono/node-server` duplicate does not reproduce here, because the package that caused it is not in this tree.
+
+### The pin that is deliberately absent
+
+**`better-sqlite3` is not pinned in `ai-that-plans/package.json`, and that is a decision.** `@langchain/langgraph-checkpoint-sqlite@1.0.3` declares `better-sqlite3: ^12.10.0`, which resolves to **12.11.1**. The current release is **13.0.1**, outside that range — so a top-level pin at 13.x would install a *second copy of a native module*, and a top-level pin at 12.11.1 would be a line somebody has to maintain to say what npm already worked out. It arrives through the saver, and the version it arrives at is recorded here instead.
+
+### Known transitive deprecation
+
+`npm ci` in `ai-that-plans` prints exactly one deprecation warning, and it is not ours to fix:
+
+```text
+npm warn deprecated prebuild-install@7.1.3: No longer maintained. Please contact the author of the relevant native addon; alternatives are available.
+```
+
+The chain is `@langchain/langgraph-checkpoint-sqlite@1.0.3` → `better-sqlite3@12.11.1` → `prebuild-install@7.1.3`. The warning's own text names the fix and it is not available to us: it is the *native addon's* author who has to move off `prebuild-install`, and `better-sqlite3@12.11.1` still uses it. Forcing it through `overrides` would replace a documented warning with an unverified change to how a native binary is fetched, in the dependency the whole of chapters 5, 8, 10 and 13 sit on. Left alone, deliberately, and re-check when `better-sqlite3` next moves inside the saver's declared range.
+
+### The container
+
+| Image | Pinned | Why | Last verified |
+|---|---|---|---|
+| `postgres` | `18.4-bookworm` | Plain PostgreSQL — no extension, unlike Book 2's `pgvector/pgvector`, because a checkpointer needs rows and not vectors. Verified by running it: `postgres (PostgreSQL) 18.4 (Debian 18.4-1.pgdg12+1)`. Published on **127.0.0.1:5433, not 5432**, so a reader who still has Book 2's stack up does not meet "port is already allocated" as their first experience of chapter 6. The volume is mounted at `/var/lib/postgresql`, **not** `.../data`, for the same PG18 reason Book 2 records. | 2026-07-28 |
+
+Two environment variables, because one name is already taken. This book's URL is **`PLANS_DATABASE_URL`**; the repository root's `.env.example` sets `DATABASE_URL` to Book 2's Postgres on 5432. `ch06/checkpointer.ts` and `ch14/env.ts` resolve `PLANS_DATABASE_URL ?? DATABASE_URL ?? postgresql://braxby:braxby@localhost:5433/braxby` at import, so the printed lines that read `process.env.DATABASE_URL` stand exactly as the page has them. `ch07/durable.ts` is the one printed listing with nowhere above it to put that assignment, so it is bridged at the call site instead — `scripts/run.ts` says so rather than letting it throw.
+
+Verified against that container on 2026-07-28: `ch06/setup-db` creates the `braxby` schema with `checkpoints`, `checkpoint_blobs`, `checkpoint_writes`, `checkpoint_migrations` and the `thread_owner` table LangGraph does not create for you; `ch07/durable` creates the saver's four plus the store's `store` and `store_migrations`; both are idempotent; `ch06/threads.sql` runs.
+
+### Models
+
+| | Pinned | Why | Last verified |
+|---|---|---|---|
+| The planner | `claude-opus-5` | **The only node in the book bound to Opus**, and the reason is structural: the plan is decided once per run and everything downstream obeys it, so it is the one call where a better answer is worth the price. Chapters 2, 4, 7, 13 and 14 all bind it in the same place and nowhere else. | 2026-07-28 |
+| Everything else | `claude-sonnet-5` | Inherited from Book 3. The specialists in chapters 11, 12 and 14 run on it. **Rejects a non-default `temperature`, `top_p` or `top_k` with a 400** — so `ch14/no-sampling.test.ts` greps this repository's own source and fails the build. That test is in `npm run verify`. | 2026-07-28 |
+
+### What CI can prove without a key
+
+More than in any previous book, because a graph is mostly machinery around the model rather than the model itself. Chapters **3, 5, 8, 9, 10 and 13 run end to end with no key**, along with chapter 4's `run-examples`, chapter 6's `run-examples` and chapter 12's `split`. `npm run verify` is 8 test files and 57 tests over the reducers, the routing functions, the approval decision, the three time-travel claims, the loop and stall detectors, and the sampling guard — no network, no key, no container, under a second.
+
+Both `scripts/run.ts` and `vitest.config.ts` name every file they cover **one line at a time, with no wildcard**, and both throw at startup if the tree and the list have drifted. That is Book 1's lesson written down as code: a glob that stops matching after a rename fails silently, and silence is how tests that spend money end up in the suite that is not supposed to.
+
 ## Runtime
 
 | Component | Pinned | Why | Last verified |
@@ -178,6 +235,7 @@ That second job is the early-warning system for framework churn. When it fires: 
 
 Changes to a pin go here, newest first — date, what moved, from what to what, and why.
 
+- **2026-07-28 — Book 4's set, *AI That Plans*.** Six new packages — `@langchain/langgraph@1.4.8` and its checkpoint, SQLite, Postgres, supervisor and swarm satellites — plus `pg` and `@types/pg` returning at Book 2's versions and `hono` + `@hono/node-server` at Books 1 and 3's. Verified by installing the tree and running `npm ci && npm run verify` on Node 24.18.0 — 184 `.ts` files at zero errors, of which 173 are listings, eight are test files carrying 57 keyless tests that finish in under a second — plus every listing that needs no key, and the Postgres listings against a real `postgres:18.4-bookworm`. Four things are recorded rather than papered over. **`better-sqlite3` is deliberately not pinned**: the SQLite saver's `^12.10.0` cannot reach the current 13.0.1, so a top-level pin would install a second copy of a native module; it arrives at 12.11.1 through the saver. One transitive deprecation survives — `prebuild-install@7.1.3`, under `better-sqlite3` — and is left alone for the same reason Book 2 left `whatwg-encoding` alone. The container is published on **5433, not 5432**, so it cannot collide with Book 2's, and the second environment variable that follows from that (`PLANS_DATABASE_URL`) is resolved in glue rather than by editing a printed line. And `@langchain/langgraph-swarm` is the package `createHandoffTool` comes from — **not** the supervisor package, which is the easiest import in chapter 11 to get wrong.
 - **2026-07-26 — Book 3's set, *AI That Acts*.** One new package, `@modelcontextprotocol/sdk@1.29.0`, plus `hono` and `@hono/node-server` returning at Book 1's versions for the sample service the tools call. Verified by installing the tree and running `npm ci && npm run typecheck && npm run verify` on it — 110 source files at zero errors, four test files and seven tests, keyless — plus every listing that does not need a key, and chapter 11's client-and-server pair over stdio. Three things are recorded rather than papered over. `@hono/node-server` **resolves twice** and stays that way, because the MCP SDK's caret on the 1.x line cannot reach 2.0.11 and an `overrides` entry would force an unverified major bump on somebody else's declared range. `@langchain/langgraph` is **absent on purpose**: chapter 10 names the middleware that needs a checkpointer, shows what it throws without one, and does not build on it. And the sample application's database is **`node:sqlite`**, built into Node 24, so the unique index chapter 7 depends on is a real index and costs no dependency.
 - **2026-07-25 — Book 2's set, *AI That Reads*.** Thirteen new packages and two container images, all verified by installing the tree, starting both containers, and running `npm ci && npm run typecheck && npm run verify` plus every chapter that does not need a key. Four of them were arrived at the hard way. `@langchain/community` is **absent, not forgotten** — it was deprecated wholesale on 2026-05-27 and every loader Book 2 would have taken from it is now the underlying library called directly. `cohere-ai` is **deliberately not pinned**, because `@langchain/cohere` brings its own copy and a top-level pin resolves a second one. `@langchain/pgvector` is a `0.1.0` and that is stated rather than glossed. And `@anthropic-ai/sdk` is a top-level dependency here too, at the same `0.115.0`, because chapter 10's `budget.ts` imports it directly — which is why chapter 10 now carries the install line for it. One transitive deprecation warning survives, through `cheerio@1.2.0`, and is recorded above rather than papered over with an `overrides` entry.
 - **2026-07-25 — first published set.** Every pin above landed with *AI That Answers*, verified by installing the tree and running `npm ci && npm run typecheck && npm run verify` on it. Two of them were arrived at the hard way and are worth restating: `@langchain/anthropic` is `1.5.2` rather than `1.5.1` because `1.5.1` produces a duplicated `@anthropic-ai/sdk`, and `@types/node` is `24.13.3` rather than `latest` because `latest` is Node 26 typings against a Node 24 runtime.

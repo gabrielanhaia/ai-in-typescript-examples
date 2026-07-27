@@ -1,0 +1,31 @@
+<!-- ch09/public/index.html -->
+<h1>Braxby workshop</h1>
+<form id="ask"><input id="q" size="50" /><button>Send</button></form>
+<ul id="log"></ul>
+<script>
+  const log = document.getElementById("log");
+  const line = (text) => {
+    const li = document.createElement("li");
+    li.textContent = text;
+    log.append(li);
+  };
+
+  document.getElementById("ask").onsubmit = async (e) => {
+    e.preventDefault();
+    const q = encodeURIComponent(document.getElementById("q").value);
+    const started = await fetch("/runs?q=" + q, { method: "POST" });
+    const { thread } = await started.json();
+    const src = new EventSource("/events?thread=" + thread);
+
+    src.addEventListener("snapshot", (m) =>
+      line("at step " + JSON.parse(m.data).cursor));
+    src.addEventListener("updates", (m) =>
+      line("done: " + Object.keys(JSON.parse(m.data)).join(", ")));
+    src.addEventListener("custom", (m) => {
+      const d = JSON.parse(m.data);
+      line(d.node + " " + (d.supplier ?? d.phase));
+    });
+    src.addEventListener("failed", () => src.close());
+    src.addEventListener("end", () => src.close());
+  };
+</script>

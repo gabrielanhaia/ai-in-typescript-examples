@@ -23,10 +23,17 @@ const ORDER = {
   coverEndsOn: "2027-11-03",
 } as const;
 
-/** The part the warranty job turns out to need. */
+/**
+ * The part the warranty job turns out to need. The four fields are the four
+ * the book prints: chapter 8's approval sentence is assembled from all of
+ * them ("Order Verano rear hub, 142mm (HUB-VR-142) from Coldharbour
+ * Distribution for GBP 68.40."), and chapter 8's `Part` schema requires
+ * `name`, so it lives here rather than in the sentence that reads it.
+ */
 const HUB = {
-  code: "HB-118",
-  supplier: "Fettle Components",
+  code: "HUB-VR-142",
+  name: "Verano rear hub, 142mm",
+  supplier: "Coldharbour Distribution",
   priceGbp: 68.4,
 } as const;
 
@@ -61,10 +68,24 @@ export async function findHub(frame: string): Promise<typeof HUB> {
   return HUB;
 }
 
-let orderSeq = 0;
+/** Starts at 1000 so the first order of a process is PO-1001, which is the
+ *  reference chapters 8 and 14 print. */
+let orderSeq = 1000;
 
 /** Idempotent per part+supplier, so a resumed run cannot order twice. */
 const placed = new Map<string, string>();
+
+/**
+ * Test seam: chapter 8's gate test reads `supplier.ordersPlaced` on both
+ * sides of an invoke and asserts it did not move, which is how it proves the
+ * pause is IN FRONT OF the money rather than merely somewhere in the node.
+ *
+ * Bound to a second name here because `placeOrder`'s own parameter is called
+ * `supplier` and would shadow it.
+ */
+const counter = { ordersPlaced: 0 };
+
+export const supplier = counter;
 
 export async function placeOrder(
   code: string,
@@ -75,6 +96,7 @@ export async function placeOrder(
   if (existing !== undefined) return existing;
   const ref = `PO-${(++orderSeq).toString().padStart(4, "0")}`;
   placed.set(key, ref);
+  counter.ordersPlaced += 1;
   return ref;
 }
 
@@ -87,7 +109,7 @@ const RESULTS: Record<Step, () => Promise<string>> = {
   lookup_order: async () =>
     `${ORDER.id}, frame ${ORDER.frame}, bought ${ORDER.purchased}`,
   check_warranty: async () =>
-    `in cover to ${ORDER.coverEndsOn}, parts and labor`,
+    `in cover to ${ORDER.coverEndsOn}, parts and labour`,
   find_parts: async () => {
     const hub = await findHub(ORDER.frame);
     return `${hub.code} rear hub, ${hub.supplier}, GBP ${hub.priceGbp.toFixed(2)}`;
@@ -111,12 +133,22 @@ export async function runTool(name: string): Promise<string> {
  * lookup is arranged to fail the FIRST time it is attempted at a given cursor
  * and succeed on the retry, which is what a flaky upstream actually looks like.
  * Both arities are printed in the book, so `at` stays optional.
+ *
+ * Three call shapes are printed, not two. Chapter 4 passes the cursor as a
+ * number; chapter 14's `execute` node passes the whole state — `runStep(step,
+ * state)` — and reads the cursor off it. Widening the parameter here is what
+ * lets both printed lines stand exactly as the page has them, and it costs
+ * chapter 4 nothing: a number still means what it always meant.
  */
 const attempted = new Set<number>();
 
-export async function runStep(name: string, at?: number): Promise<string> {
-  if (name === "find_parts" && at !== undefined && !attempted.has(at)) {
-    attempted.add(at);
+export async function runStep(
+  name: string,
+  at?: number | { cursor: number },
+): Promise<string> {
+  const cursor = typeof at === "object" ? at.cursor : at;
+  if (name === "find_parts" && cursor !== undefined && !attempted.has(cursor)) {
+    attempted.add(cursor);
     throw new Error("supplier catalog timed out");
   }
   return runTool(name);
